@@ -46,19 +46,17 @@
   };
 </script>
 
-  <meta name="description" content="canvas-nest.js for NexT  Installation  If you want to use the CDN instead of clone this repo, please jump to the Step 3.  Step 1 &amp;rarr; Go to NexT dir  Change dir to NexT directory. There must be layo">
+  <meta name="description" content="谦虚为人，谦逊待人。">
 <meta property="og:type" content="website">
 <meta property="og:title" content="daixx&#39;s blog">
-<meta property="og:url" content="https://daixxtech.github.io/lib/canvas-nest/README.html">
+<meta property="og:url" content="https://daixxtech.github.io/tags/CSharp/index.html">
 <meta property="og:site_name" content="daixx&#39;s blog">
-<meta property="og:description" content="canvas-nest.js for NexT  Installation  If you want to use the CDN instead of clone this repo, please jump to the Step 3.  Step 1 &amp;rarr; Go to NexT dir  Change dir to NexT directory. There must be layo">
+<meta property="og:description" content="谦虚为人，谦逊待人。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-01-07T06:07:21.456Z">
-<meta property="article:modified_time" content="2020-01-07T06:07:21.456Z">
 <meta property="article:author" content="daixx">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://daixxtech.github.io/lib/canvas-nest/README">
+<link rel="canonical" href="https://daixxtech.github.io/tags/CSharp/">
 
 
 <script id="page-configurations">
@@ -70,8 +68,7 @@
   };
 </script>
 
-  <title> | daixx's blog
-  </title>
+  <title>标签: CSharp | daixx's blog</title>
   
 
 
@@ -171,86 +168,54 @@
       <div class="main-inner">
         <div class="content-wrap">
           
-  
-  
 
           <div class="content">
             
 
-  <div class="posts-expand">
-    
-    
-    
-    <div class="post-block" lang="zh-CN">
-      <header class="post-header">
-
-<h1 class="post-title" itemprop="name headline">
-</h1>
-
-<div class="post-meta">
   
-  <ul class="breadcrumb">
-          
-            <li><a href="/lib/">LIB</a></li>
-            <li><a href="/lib/canvas-nest/">CANVAS-NEST</a></li>
-            <li>README</li>
-          
-  </ul>
-
-</div>
-
-</header>
-
-      
-      
-      
-      <div class="post-body">
-          <h1 align="center"><a href="https://github.com/hustcc/canvas-nest.js" target="_blank" rel="noopener">canvas-nest.js</a> for <a href="https://github.com/theme-next" target="_blank" rel="noopener">NexT</a></h1>
-
-<h1 align="center">Installation</h1>
-
-<h2>If you want to use the CDN instead of clone this repo, please jump to the Step 3.</h2>
-
-<h2 align="center">Step 1 &rarr; Go to NexT dir</h2>
-
-<p>Change dir to <strong>NexT</strong> directory. There must be <code>layout</code>, <code>source</code>, <code>languages</code> and other directories:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> themes/next</span><br><span class="line">$ ls</span><br><span class="line">_config.yml  crowdin.yml  docs  gulpfile.js  languages  layout  LICENSE.md  package.json  README.md  scripts  <span class="built_in">source</span></span><br></pre></td></tr></table></figure>
-
-<h2 align="center">Step 2 &rarr; Get module</h2>
-
-<p>Install module to <code>source/lib</code> directory:</p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ git <span class="built_in">clone</span> https://github.com/theme-next/theme-next-canvas-nest <span class="built_in">source</span>/lib/canvas-nest</span><br></pre></td></tr></table></figure>
-
-<h2 align="center">Step 3 &rarr; Set it up</h2>
-
-<p>Enable module in <strong>NexT</strong> <code>_config.yml</code> file:</p>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">canvas_nest:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">onmobile:</span> <span class="literal">true</span> <span class="comment"># display on mobile or not</span></span><br><span class="line">  <span class="attr">color:</span> <span class="string">'0,0,255'</span> <span class="comment"># RGB values, use ',' to separate</span></span><br><span class="line">  <span class="attr">opacity:</span> <span class="number">0.5</span> <span class="comment"># the opacity of line: 0~1</span></span><br><span class="line">  <span class="attr">zIndex:</span> <span class="number">-1</span> <span class="comment"># z-index property of the background</span></span><br><span class="line">  <span class="attr">count:</span> <span class="number">99</span> <span class="comment"># the number of lines</span></span><br></pre></td></tr></table></figure>
-
-<p><strong>And, if you wants to use the CDN, then need to set:</strong></p>
-<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">vendors:</span></span><br><span class="line">  <span class="string">...</span></span><br><span class="line">  <span class="attr">canvas_nest:</span> <span class="string">//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-nest@latest/canvas-nest.min.js</span></span><br><span class="line">  <span class="attr">canvas_nest_nomobile:</span> <span class="string">//cdn.jsdelivr.net/gh/theme-next/theme-next-canvas-nest@latest/canvas-nest-nomobile.min.js</span></span><br></pre></td></tr></table></figure>
-
-<h1 align="center">Update</h1>
-
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">cd</span> themes/next/<span class="built_in">source</span>/lib/canvas-nest</span><br><span class="line">$ git pull</span><br></pre></td></tr></table></figure>
-
+  
+  
+  <div class="post-block">
+    <div class="posts-collapse">
+      <div class="collection-title">
+        <h1 class="collection-header">CSharp
+          <small>标签</small>
+        </h1>
       </div>
-      
-      
-      
-    </div>
-    
-  <ul class="breadcrumb">
-          
-            <li><a href="/lib/">LIB</a></li>
-            <li><a href="/lib/canvas-nest/">CANVAS-NEST</a></li>
-            <li>README</li>
-          
-  </ul>
 
-    
-    
-    
+      
+    <div class="collection-year">
+      <h1 class="collection-header">2020</h1>
+    </div>
+
+  <article itemscope itemtype="http://schema.org/Article">
+    <header class="post-header">
+
+      <div class="post-meta">
+        <time itemprop="dateCreated"
+              datetime="2020-01-08T17:31:40+08:00"
+              content="2020-01-08">
+          01-08
+        </time>
+      </div>
+
+      <h2 class="post-title">
+          <a class="post-title-link" href="/2020/01/08/csharp-unity3d-nameing-convention/" itemprop="url">
+            <span itemprop="name">C# Unity3D 命名规范（个人）</span>
+          </a>
+      </h2>
+
+    </header>
+  </article>
+
+    </div>
   </div>
+  
+  
+  
+
+  
+
 
 
           </div>
@@ -301,7 +266,6 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#null"><span class="nav-number">1.</span> <span class="nav-text">canvas-nest.js for NexT</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#null"><span class="nav-number">2.</span> <span class="nav-text">Installation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">2.1.</span> <span class="nav-text">If you want to use the CDN instead of clone this repo, please jump to the Step 3.</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">2.2.</span> <span class="nav-text">Step 1 &amp;rarr; Go to NexT dir</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">2.3.</span> <span class="nav-text">Step 2 &amp;rarr; Get module</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#null"><span class="nav-number">2.4.</span> <span class="nav-text">Step 3 &amp;rarr; Set it up</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#null"><span class="nav-number">3.</span> <span class="nav-text">Update</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
