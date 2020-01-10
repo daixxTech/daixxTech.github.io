@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://daixxTech.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="本文主要记录实际参数（argument）和形式参数（parameter）的定义，以及 C# 中形式参数的分类。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="实际参数和形式参数">
+<meta property="og:url" content="https://daixxtech.github.io/2020/01/10/argument-and-parameter/index.html">
+<meta property="og:site_name" content="daixx&#39;s blog">
+<meta property="og:description" content="本文主要记录实际参数（argument）和形式参数（parameter）的定义，以及 C# 中形式参数的分类。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-01-10T15:32:24.000Z">
+<meta property="article:modified_time" content="2020-01-10T17:17:30.464Z">
+<meta property="article:author" content="daixx">
+<meta property="article:tag" content="CSharp">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://daixxtech.github.io/2020/01/10/argument-and-parameter/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>实际参数和形式参数 | daixx's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">daixx's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://daixxtech.github.io/2020/01/10/argument-and-parameter/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="daixx">
+      <meta itemprop="description" content="谦虚为人，谦逊待人。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="daixx's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          实际参数和形式参数
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-01-10 23:32:24" itemprop="dateCreated datePublished" datetime="2020-01-10T23:32:24+08:00">2020-01-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-01-11 01:17:30" itemprop="dateModified" datetime="2020-01-11T01:17:30+08:00">2020-01-11</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CSharp/" itemprop="url" rel="index">
+                    <span itemprop="name">CSharp</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文主要记录实际参数（argument）和形式参数（parameter）的定义，以及 C# 中形式参数的分类。</p>
+<a id="more"></a>
+
+<h2 id="实际参数"><a href="#实际参数" class="headerlink" title="实际参数"></a>实际参数</h2><p>简称“实参”。</p>
+<p>在调用有参方法时，方法名后面括号中的参数称为“实际参数”。</p>
+<h2 id="形式参数"><a href="#形式参数" class="headerlink" title="形式参数"></a>形式参数</h2><p>简称“形参”。</p>
+<p>在定义方法名和方法体的时候使用的参数称为“形式参数”，目的是用来接收调用该方法时传入的参数。</p>
+<h3 id="传值参数"><a href="#传值参数" class="headerlink" title="传值参数"></a>传值参数</h3><p>传值参数会创建实参的副本来接收实参的值。</p>
+<p>对形参的修改不影响实参的值。</p>
+<h4 id="参数类型为值类型"><a href="#参数类型为值类型" class="headerlink" title="参数类型为值类型"></a>参数类型为值类型</h4><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">int</span> <span class="keyword">value</span> = <span class="number">8</span>;</span><br><span class="line">    	Method(<span class="keyword">value</span>);</span><br><span class="line">        Console.WriteLine(<span class="keyword">value</span>); <span class="comment">// value 的值不变</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Method</span>(<span class="params"><span class="keyword">int</span> <span class="keyword">value</span></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">value</span> = <span class="number">16</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="参数类型为引用类型"><a href="#参数类型为引用类型" class="headerlink" title="参数类型为引用类型"></a>参数类型为引用类型</h4><h5 id="创建新对象"><a href="#创建新对象" class="headerlink" title="创建新对象"></a>创建新对象</h5><p>这种情况比较少见，一般不会用到。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Student student = <span class="keyword">new</span> Student() &#123; Name = <span class="string">"daixx"</span> &#125;;</span><br><span class="line">        Console.WriteLine(<span class="string">"&#123;0&#125;, &#123;1&#125;"</span>, student.GetHashCode(), student.Name);</span><br><span class="line">        Method(student);</span><br><span class="line">        <span class="comment">// 对比哈希码可知，student 的值没有发生变化</span></span><br><span class="line">        Console.WriteLine(<span class="string">"&#123;0&#125;, &#123;1&#125;"</span>, student.GetHashCode(), student.Name);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Method</span>(<span class="params">Student student</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        student = <span class="keyword">new</span> Student() &#123; Name = <span class="string">"daixxTech"</span> &#125;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Student</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> Name &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="不创建新对象，只操作对象"><a href="#不创建新对象，只操作对象" class="headerlink" title="不创建新对象，只操作对象"></a>不创建新对象，只操作对象</h5><p>这种情况也比较少见，因为作为方法而言，主要输出应该靠返回值，对形参所引用的对象进行操作属于方法的副作用（side-effect），这种副作用在平时编程时要尽量避免。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Student student = <span class="keyword">new</span> Student() &#123; Name = <span class="string">"daixx"</span> &#125;;</span><br><span class="line">        Console.WriteLine(<span class="string">"&#123;0&#125;, &#123;1&#125;"</span>, student.GetHashCode(), student.Name);</span><br><span class="line">        Method(student);</span><br><span class="line">        <span class="comment">// student.Name 的值被修改为 daixxTech</span></span><br><span class="line">        Console.WriteLine(<span class="string">"&#123;0&#125;, &#123;1&#125;"</span>, student.GetHashCode(), student.Name);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Method</span>(<span class="params">Student student</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        student.Name = <span class="string">"daixxTech"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Student</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> Name &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="引用参数"><a href="#引用参数" class="headerlink" title="引用参数"></a>引用参数</h3><p>对形参的修改会影响实参的值。</p>
+<p>在对应的形参和实参前面加 ref 关键字进行修饰。</p>
+<h4 id="参数类型为值类型-1"><a href="#参数类型为值类型-1" class="headerlink" title="参数类型为值类型"></a>参数类型为值类型</h4><p>即有意利用方法的副作用来修改实参的值。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">	<span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">int</span> <span class="keyword">value</span> = <span class="number">8</span>;</span><br><span class="line">        Method(<span class="keyword">ref</span> <span class="keyword">value</span>);</span><br><span class="line">        Console.WriteLine(<span class="keyword">value</span>); <span class="comment">// value 的值被修改为 16</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Method</span>(<span class="params"><span class="keyword">ref</span> <span class="keyword">int</span> <span class="keyword">value</span></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">value</span> = <span class="number">16</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="参数类型为引用类型-1"><a href="#参数类型为引用类型-1" class="headerlink" title="参数类型为引用类型"></a>参数类型为引用类型</h4><h5 id="创建新对象-1"><a href="#创建新对象-1" class="headerlink" title="创建新对象"></a>创建新对象</h5><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Student student = <span class="keyword">new</span> Student() &#123; Name = <span class="string">"daixx"</span> &#125;;</span><br><span class="line">    Console.WriteLine(<span class="string">"&#123;0&#125;, &#123;1&#125;"</span>, student.GetHashCode(), student.Name);</span><br><span class="line">    Method(<span class="keyword">ref</span> student);</span><br><span class="line">    <span class="comment">/* 执行完方法后，student 被修改为新的 student。</span></span><br><span class="line"><span class="comment">       新的 student 的 Name 属性的值为 daixxTech */</span></span><br><span class="line">    Console.WriteLine(<span class="string">"&#123;0&#125;, &#123;1&#125;"</span>, student.GetHashCode(), student.Name);</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Method</span>(<span class="params"><span class="keyword">ref</span> Student student</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    student = <span class="keyword">new</span> Student() &#123; Name = <span class="string">"daixxTech"</span> &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h5 id="不创建新对象，只操作对象-1"><a href="#不创建新对象，只操作对象-1" class="headerlink" title="不创建新对象，只操作对象"></a>不创建新对象，只操作对象</h5><p>与传值参数（即不加 ref 关键字）的结果相同，但是实现机理不同。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Student student = <span class="keyword">new</span> Student() &#123; Name = <span class="string">"daixx"</span> &#125;;</span><br><span class="line">        Console.WriteLine(<span class="string">"&#123;0&#125;, &#123;1&#125;"</span>, student.GetHashCode(), student.Name);</span><br><span class="line">        Method(<span class="keyword">ref</span> student); </span><br><span class="line">        <span class="comment">// student 不变，student.Name 的值被修改为 daixxTech</span></span><br><span class="line">        Console.WriteLine(<span class="string">"&#123;0&#125;, &#123;1&#125;"</span>, student.GetHashCode(), student.Name);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Method</span>(<span class="params"><span class="keyword">ref</span> Student student</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        student.Name = <span class="string">"daixxTech"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="输出参数"><a href="#输出参数" class="headerlink" title="输出参数"></a>输出参数</h3><p>对形参的修改会影响实参的值。</p>
+<p>在对应的形参和实参前面加 out 关键字进行修饰。</p>
+<p>方法体内必须要对输出参数进行赋值操作。</p>
+<p>从语义上来讲，ref 是为了“改变”，out 是为了“输出”。</p>
+<h4 id="参数类型为值类型-2"><a href="#参数类型为值类型-2" class="headerlink" title="参数类型为值类型"></a>参数类型为值类型</h4><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">int</span> <span class="keyword">value</span> = <span class="number">8</span>;</span><br><span class="line">        <span class="comment">// Parse 失败，value 的值被修改为 0</span></span><br><span class="line">        <span class="keyword">if</span> (IntParser.TryParse(<span class="string">"abc"</span>, <span class="keyword">out</span> <span class="keyword">value</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            Console.WriteLine(<span class="string">"Success, "</span> + <span class="keyword">value</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Console.WriteLine(<span class="string">"Fail, "</span> + <span class="keyword">value</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// Parse 成功，value 的值被修改为 16</span></span><br><span class="line">        <span class="keyword">if</span> (IntParser.TryParse(<span class="string">"16"</span>, <span class="keyword">out</span> <span class="keyword">value</span>))</span><br><span class="line">        &#123;</span><br><span class="line">            Console.WriteLine(<span class="string">"Success, "</span> + <span class="keyword">value</span>);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">            Console.WriteLine(<span class="string">"Fail, "</span> + <span class="keyword">value</span>);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">IntParser</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">TryParse</span>(<span class="params"><span class="keyword">string</span> input, <span class="keyword">out</span> <span class="keyword">int</span> output</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">try</span></span><br><span class="line">        &#123;</span><br><span class="line">            output = <span class="keyword">int</span>.Parse(input);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">catch</span></span><br><span class="line">        &#123;</span><br><span class="line">            output = <span class="number">0</span>;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="参数类型为引用类型-2"><a href="#参数类型为引用类型-2" class="headerlink" title="参数类型为引用类型"></a>参数类型为引用类型</h4><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Student student = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (StudentFactory.Create(<span class="string">"daixx"</span>, <span class="number">20</span>, <span class="keyword">out</span> student))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="comment">// student 的值被修改为新的 student（Name 的值为 daixx，Age 的值为 20）</span></span><br><span class="line">            Console.WriteLine(<span class="string">"&#123;0&#125;, &#123;1&#125;."</span>, student.Name, student.Age);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Student</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Age &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">string</span> Name &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">StudentFactory</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">Create</span>(<span class="params"><span class="keyword">string</span> name, <span class="keyword">int</span> age, <span class="keyword">out</span> Student output</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        output = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">string</span>.IsNullOrEmpty(name))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (age &lt; <span class="number">0</span> || age &gt; <span class="number">120</span>)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        output = <span class="keyword">new</span> Student() &#123; Name = name, Age = age &#125;;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="数组参数"><a href="#数组参数" class="headerlink" title="数组参数"></a>数组参数</h3><p>只能有一个，且必须是形参列表的最后一个，用 params 关键字进行修饰。</p>
+<p>Console.WriteLine() 方法就是如此实现的。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">int</span> sum = CalculateSum(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>); <span class="comment">// 不需要传入数组参数，方法自动将参数打包为数组</span></span><br><span class="line">        Console.WriteLine(sum); <span class="comment">// 输出为 6</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">CalculateSum</span>(<span class="params"><span class="keyword">params</span> <span class="keyword">int</span>[] intArray</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> item <span class="keyword">in</span> intArray)</span><br><span class="line">        &#123;</span><br><span class="line">            sum += item;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> sum;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="具名参数"><a href="#具名参数" class="headerlink" title="具名参数"></a>具名参数</h3><p>即参数具有名字。</p>
+<p>具名参数的优点：</p>
+<ol>
+<li>提高代码可读性</li>
+<li>参数的位置不在受参数列表约束</li>
+</ol>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        PrintInfo(<span class="string">"daixx"</span>, <span class="number">20</span>); <span class="comment">// 不具名参数</span></span><br><span class="line">        PrintInfo(age: <span class="number">20</span>, name: <span class="string">"daixx"</span>); <span class="comment">// 具名参数</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PrintInfo</span>(<span class="params"><span class="keyword">string</span> name, <span class="keyword">int</span> age</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">"&#123;0&#125;, &#123;1&#125;."</span>, name, age);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="可选参数"><a href="#可选参数" class="headerlink" title="可选参数"></a>可选参数</h3><p>参数具有默认值，从而变为可选参数。</p>
+<p>调用方法时不传入该参数，则该参数自动获得默认值。</p>
+<p>不推荐使用可选参数。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        PrintInfo();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">PrintInfo</span>(<span class="params"><span class="keyword">string</span> name = <span class="string">"daixx"</span>, <span class="keyword">int</span> age = <span class="number">20</span></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">"&#123;0&#125;, &#123;1&#125;."</span>, name, age);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="扩展方法（this-参数）"><a href="#扩展方法（this-参数）" class="headerlink" title="扩展方法（this 参数）"></a>扩展方法（this 参数）</h3><p>扩展方法必须是共有的，静态的，即被 public static 关键字进行修饰。</p>
+<p>必须是形参列表的第一个，用 this 关键字进行修饰。</p>
+<p>必须由一个静态类（一般命名为SomeTypeExtension）来统一收纳对SomeType类型的扩展方法。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">double</span> x = <span class="number">3.14159</span>;</span><br><span class="line">        <span class="comment">// double 类型本身没有 Round 方法，只能使用 Math.Round</span></span><br><span class="line">        <span class="comment">//double y = Math.Round(x, 4);</span></span><br><span class="line">        <span class="comment">// 使用了扩展方法后，double 就可以通过 this 参数调用 Round 方法了</span></span><br><span class="line">        <span class="keyword">double</span> y = x.Round(<span class="number">4</span>);</span><br><span class="line">        Console.WriteLine(y);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">static</span> <span class="keyword">class</span> <span class="title">DoubleExtension</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">double</span> <span class="title">Round</span>(<span class="params"><span class="keyword">this</span> <span class="keyword">double</span> input, <span class="keyword">int</span> digits</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">return</span> Math.Round(input, digits);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="LINQ"><a href="#LINQ" class="headerlink" title="LINQ"></a>LINQ</h4><p>LINQ就是扩展方法的一大应用。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Linq; <span class="comment">// 引入Linq命名空间</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Program</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Main</span>(<span class="params"><span class="keyword">string</span>[] args</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">var</span> myList = <span class="keyword">new</span> List&lt;<span class="keyword">int</span>&gt;() &#123; <span class="number">11</span>, <span class="number">12</span>, <span class="number">9</span>, <span class="number">14</span>, <span class="number">15</span> &#125;;</span><br><span class="line">        <span class="comment">//bool result = AllGreaterThanTen(myList);</span></span><br><span class="line">        <span class="comment">// 这里的 All 就是一个扩展方法，用 1 行代码解决了 10+ 行代码要做的事</span></span><br><span class="line">        <span class="keyword">bool</span> result = myList.All(i =&gt; i &gt; <span class="number">10</span>);</span><br><span class="line">        Console.WriteLine(result);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">bool</span> <span class="title">AllGreaterThanTen</span>(<span class="params">List&lt;<span class="keyword">int</span>&gt; intList</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">foreach</span> (<span class="keyword">var</span> item <span class="keyword">in</span> intList)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (item &lt;= <span class="number">10</span>)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CSharp/" rel="tag"># CSharp</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/01/08/csharp-unity3d-nameing-convention/" rel="prev" title="C# Unity3D 命名规范">
+      <i class="fa fa-chevron-left"></i> C# Unity3D 命名规范
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#实际参数"><span class="nav-number">1.</span> <span class="nav-text">实际参数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#形式参数"><span class="nav-number">2.</span> <span class="nav-text">形式参数</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#传值参数"><span class="nav-number">2.1.</span> <span class="nav-text">传值参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#参数类型为值类型"><span class="nav-number">2.1.1.</span> <span class="nav-text">参数类型为值类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参数类型为引用类型"><span class="nav-number">2.1.2.</span> <span class="nav-text">参数类型为引用类型</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#创建新对象"><span class="nav-number">2.1.2.1.</span> <span class="nav-text">创建新对象</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#不创建新对象，只操作对象"><span class="nav-number">2.1.2.2.</span> <span class="nav-text">不创建新对象，只操作对象</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#引用参数"><span class="nav-number">2.2.</span> <span class="nav-text">引用参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#参数类型为值类型-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">参数类型为值类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参数类型为引用类型-1"><span class="nav-number">2.2.2.</span> <span class="nav-text">参数类型为引用类型</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#创建新对象-1"><span class="nav-number">2.2.2.1.</span> <span class="nav-text">创建新对象</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#不创建新对象，只操作对象-1"><span class="nav-number">2.2.2.2.</span> <span class="nav-text">不创建新对象，只操作对象</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#输出参数"><span class="nav-number">2.3.</span> <span class="nav-text">输出参数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#参数类型为值类型-2"><span class="nav-number">2.3.1.</span> <span class="nav-text">参数类型为值类型</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#参数类型为引用类型-2"><span class="nav-number">2.3.2.</span> <span class="nav-text">参数类型为引用类型</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#数组参数"><span class="nav-number">2.4.</span> <span class="nav-text">数组参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#具名参数"><span class="nav-number">2.5.</span> <span class="nav-text">具名参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#可选参数"><span class="nav-number">2.6.</span> <span class="nav-text">可选参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#扩展方法（this-参数）"><span class="nav-number">2.7.</span> <span class="nav-text">扩展方法（this 参数）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#LINQ"><span class="nav-number">2.7.1.</span> <span class="nav-text">LINQ</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="daixx"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">daixx</p>
+  <div class="site-description" itemprop="description">谦虚为人，谦逊待人。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">3</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/daixxTech" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;daixxTech" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">daixx</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.0
+  </div>
+-->
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
