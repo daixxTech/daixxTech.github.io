@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://daixxTech.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="本文主要记录 C# 中 abstract, virtual, override, new 关键字作为方法的修饰符时的使用方法及其区别。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C# 中的 abstract, virtual, override, new 关键字">
+<meta property="og:url" content="https://daixxtech.github.io/2020/01/20/abstract-virtual-override-new/index.html">
+<meta property="og:site_name" content="daixx&#39;s blog">
+<meta property="og:description" content="本文主要记录 C# 中 abstract, virtual, override, new 关键字作为方法的修饰符时的使用方法及其区别。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-01-20T11:08:24.000Z">
+<meta property="article:modified_time" content="2020-01-20T11:16:34.426Z">
+<meta property="article:author" content="daixx">
+<meta property="article:tag" content="CSharp">
+<meta property="article:tag" content="继承">
+<meta property="article:tag" content="多态">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://daixxtech.github.io/2020/01/20/abstract-virtual-override-new/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>C# 中的 abstract, virtual, override, new 关键字 | daixx's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">daixx's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://daixxtech.github.io/2020/01/20/abstract-virtual-override-new/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="daixx">
+      <meta itemprop="description" content="谦虚为人，谦逊待人。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="daixx's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C# 中的 abstract, virtual, override, new 关键字
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-01-20 19:08:24 / 修改时间：19:16:34" itemprop="dateCreated datePublished" datetime="2020-01-20T19:08:24+08:00">2020-01-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/CSharp/" itemprop="url" rel="index">
+                    <span itemprop="name">CSharp</span>
+                  </a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文主要记录 C# 中 abstract, virtual, override, new 关键字作为方法的修饰符时的使用方法及其区别。</p>
+<a id="more"></a>
+
+<h2 id="抽象方法-abstract"><a href="#抽象方法-abstract" class="headerlink" title="抽象方法 abstract"></a>抽象方法 abstract</h2><ol>
+<li>用 abstract 关键字进行修饰的方法称为抽象方法。</li>
+<li>抽象方法不能有方法体。</li>
+<li>子类中必须实现父类中的所有抽象方法。</li>
+<li>抽象方法不能用 private 关键字进行修饰。</li>
+<li>子类中实现的父类中的抽象方法要用 override 关键字进行修饰。</li>
+</ol>
+<p>C# 中抽象方法的写法如下：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">abstract</span> <span class="keyword">class</span> <span class="title">Father</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">AbstractMethod</span>(<span class="params"></span>)</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Son</span> : <span class="title">Father</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">AbstractMethod</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">"Son's override method of Father's abstract method."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="虚方法-virtual"><a href="#虚方法-virtual" class="headerlink" title="虚方法 virtual"></a>虚方法 virtual</h2><ol>
+<li>用 virtual 关键字进行修饰的方法称为虚方法。</li>
+<li>虚方法必须要有方法体。</li>
+<li>派生类中不要求重写基类中的虚方法。</li>
+<li>虚方法可以用 private 关键字进行修饰，但是一般不用，因为如果派生类无法访问虚方法的话，virtual 关键字就没有意义了。</li>
+<li>派生类中重写的基类中的虚方法要用 override 关键字进行修饰。</li>
+<li>派生类中重写的基类中的虚方法和基类中的虚方法必须具有相同的访问修饰符。</li>
+</ol>
+<p>C# 中虚方法的写法如下：</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">Father</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">VirtualMethod</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">"Father's virtual method."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Son</span> : <span class="title">Father</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">override</span> <span class="keyword">void</span> <span class="title">VirtualMethod</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">"Son's override method of Father's virtual method."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="纯虚函数"><a href="#纯虚函数" class="headerlink" title="纯虚函数"></a>纯虚函数</h3><h4 id="C-中的纯虚函数"><a href="#C-中的纯虚函数" class="headerlink" title="C# 中的纯虚函数"></a>C# 中的纯虚函数</h4><ol>
+<li>纯虚函数是 C++ 中的说法，C# 中没有纯虚函数的说法。</li>
+<li>C++ 中的纯虚函数在 C# 中以抽象方法的形式实现，即用 abstract 关键字进行修饰的方法。</li>
+</ol>
+<h4 id="C-中的纯虚函数-1"><a href="#C-中的纯虚函数-1" class="headerlink" title="C++ 中的纯虚函数"></a>C++ 中的纯虚函数</h4><ol>
+<li>纯虚函数只有定义，没有实现。</li>
+<li>派生类中必须要实现基类中的所有纯虚函数。</li>
+</ol>
+<p>在 C++ 中纯虚函数的写法如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Father</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="keyword">virtual</span> <span class="keyword">void</span> <span class="title">virtualFunction</span><span class="params">()</span> </span>= <span class="number">0</span>;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Son</span> :</span>Father</span><br><span class="line">&#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">	<span class="function"><span class="keyword">void</span> <span class="title">virtualFunction</span><span class="params">()</span> </span>&#123; &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+<h2 id="重写方法-override"><a href="#重写方法-override" class="headerlink" title="重写方法 override"></a>重写方法 override</h2><ol>
+<li><strong>对父类中的抽象方法的实现</strong>和<strong>对基类中的虚方法的重写</strong>都要用 override 关键字进行修饰。</li>
+<li>override 关键字不可与 new, static, abstract, virtual 关键字同时使用。</li>
+</ol>
+<h2 id="同名方法-new"><a href="#同名方法-new" class="headerlink" title="同名方法 new"></a>同名方法 new</h2><ol>
+<li>new 关键字可以在派生类中隐藏基类中的同名方法。</li>
+<li>在调用派生类的同名方法时，调用的方法是使用 new 关键字定义的新方法，而不是基类的方法。</li>
+<li>不使用 new 关键字来隐藏基类中的同名方法也是可以的，编译器会提示一个警告：如果是有意隐藏基类的方法，请使用 new 关键字进行修饰。</li>
+</ol>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title">Father</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">SameNameMethod</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">"Father's method of the same name."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">class</span> <span class="title">Son</span> : <span class="title">Father</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> new <span class="keyword">void</span> <span class="title">SameNameMethod</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Console.WriteLine(<span class="string">"Son's method of the same name."</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h3 id="相同"><a href="#相同" class="headerlink" title="相同"></a>相同</h3><ol>
+<li><strong>对父类中的抽象方法的实现</strong>和<strong>对基类中的虚方法的重写</strong>都要用 override 关键字进行修饰。</li>
+</ol>
+<h3 id="不同"><a href="#不同" class="headerlink" title="不同"></a>不同</h3><ol>
+<li>抽象方法不能有方法体，虚方法必须有方法体。</li>
+<li>子类中必须实现父类的所有抽象方法，派生类中不要求实现基类的虚方法。</li>
+<li>抽象方法不能用 private 关键字进行修饰，虚方法可以用但是一般不用。</li>
+<li>在派生类中对基类中的 virtual 方法使用 new 和 override 关键字进行重写的机理不同。</li>
+</ol>
+<h3 id=""><a href="#" class="headerlink" title=""></a></h3>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CSharp/" rel="tag"># CSharp</a>
+              <a href="/tags/%E7%BB%A7%E6%89%BF/" rel="tag"># 继承</a>
+              <a href="/tags/%E5%A4%9A%E6%80%81/" rel="tag"># 多态</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/01/10/argument-and-parameter/" rel="prev" title="实际参数和形式参数">
+      <i class="fa fa-chevron-left"></i> 实际参数和形式参数
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#抽象方法-abstract"><span class="nav-number">1.</span> <span class="nav-text">抽象方法 abstract</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#虚方法-virtual"><span class="nav-number">2.</span> <span class="nav-text">虚方法 virtual</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#纯虚函数"><span class="nav-number">2.1.</span> <span class="nav-text">纯虚函数</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#C-中的纯虚函数"><span class="nav-number">2.1.1.</span> <span class="nav-text">C# 中的纯虚函数</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#C-中的纯虚函数-1"><span class="nav-number">2.1.2.</span> <span class="nav-text">C++ 中的纯虚函数</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#重写方法-override"><span class="nav-number">3.</span> <span class="nav-text">重写方法 override</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#同名方法-new"><span class="nav-number">4.</span> <span class="nav-text">同名方法 new</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">5.</span> <span class="nav-text">总结</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#相同"><span class="nav-number">5.1.</span> <span class="nav-text">相同</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#不同"><span class="nav-number">5.2.</span> <span class="nav-text">不同</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#null"><span class="nav-number">5.3.</span> <span class="nav-text"></span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="daixx"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">daixx</p>
+  <div class="site-description" itemprop="description">谦虚为人，谦逊待人。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">4</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/daixxTech" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;daixxTech" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">daixx</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.0
+  </div>
+-->
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
