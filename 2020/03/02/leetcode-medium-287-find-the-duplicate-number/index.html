@@ -46,20 +46,22 @@
   };
 </script>
 
-  <meta name="description" content="本文主要记录 C# 中的一些命名规范问题，文章内容会根据个人的学习进度进行更新。 个人认为好的编程习惯是非常重要的，整洁规范的代码可以显著地提高可读性，一方面方便开发人员对代码进行维护，另一方面阅读这样的代码也可以使人身心愉悦。 PS：该命名规范有一定程度的个人主观因素，仅供参考。">
+  <meta name="description" content="本文主要记录《LeetCode-中等-287-寻找重复数》这一题目的解法。 涉及【Floyd 判圈算法】，又称【弗洛伊德的乌龟和兔子】，本质是【快慢指针】。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="C# 中的命名规范">
-<meta property="og:url" content="https://daixxtech.github.io/2020/01/08/csharp-nameing-convention/index.html">
+<meta property="og:title" content="LeetCode-中等-287-寻找重复数【Floyd 判圈算法】">
+<meta property="og:url" content="https://daixxtech.github.io/2020/03/02/leetcode-medium-287-find-the-duplicate-number/index.html">
 <meta property="og:site_name" content="daixxTech&#39;s blog">
-<meta property="og:description" content="本文主要记录 C# 中的一些命名规范问题，文章内容会根据个人的学习进度进行更新。 个人认为好的编程习惯是非常重要的，整洁规范的代码可以显著地提高可读性，一方面方便开发人员对代码进行维护，另一方面阅读这样的代码也可以使人身心愉悦。 PS：该命名规范有一定程度的个人主观因素，仅供参考。">
+<meta property="og:description" content="本文主要记录《LeetCode-中等-287-寻找重复数》这一题目的解法。 涉及【Floyd 判圈算法】，又称【弗洛伊德的乌龟和兔子】，本质是【快慢指针】。">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2020-01-08T09:31:40.000Z">
-<meta property="article:modified_time" content="2020-01-21T11:41:21.224Z">
+<meta property="article:published_time" content="2020-03-02T13:03:01.000Z">
+<meta property="article:modified_time" content="2020-03-02T13:08:25.998Z">
 <meta property="article:author" content="daixxTech">
-<meta property="article:tag" content="CSharp">
+<meta property="article:tag" content="LeetCode">
+<meta property="article:tag" content="快慢指针">
+<meta property="article:tag" content="算法">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://daixxtech.github.io/2020/01/08/csharp-nameing-convention/">
+<link rel="canonical" href="https://daixxtech.github.io/2020/03/02/leetcode-medium-287-find-the-duplicate-number/">
 
 
 <script id="page-configurations">
@@ -71,7 +73,7 @@
   };
 </script>
 
-  <title>C# 中的命名规范 | daixxTech's blog</title>
+  <title>LeetCode-中等-287-寻找重复数【Floyd 判圈算法】 | daixxTech's blog</title>
   
 
 
@@ -181,7 +183,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://daixxtech.github.io/2020/01/08/csharp-nameing-convention/">
+    <link itemprop="mainEntityOfPage" href="https://daixxtech.github.io/2020/03/02/leetcode-medium-287-find-the-duplicate-number/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.png">
@@ -194,7 +196,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          C# 中的命名规范
+          LeetCode-中等-287-寻找重复数【Floyd 判圈算法】
         </h1>
 
         <div class="post-meta">
@@ -203,24 +205,18 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
+              
 
-              <time title="创建时间：2020-01-08 17:31:40" itemprop="dateCreated datePublished" datetime="2020-01-08T17:31:40+08:00">2020-01-08</time>
+              <time title="创建时间：2020-03-02 21:03:01 / 修改时间：21:08:25" itemprop="dateCreated datePublished" datetime="2020-03-02T21:03:01+08:00">2020-03-02</time>
             </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-calendar-check-o"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-01-21 19:41:21" itemprop="dateModified" datetime="2020-01-21T19:41:21+08:00">2020-01-21</time>
-              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%A7%84%E8%8C%83/" itemprop="url" rel="index">
-                    <span itemprop="name">编程规范</span>
+                  <a href="/categories/LeetCode/" itemprop="url" rel="index">
+                    <span itemprop="name">LeetCode</span>
                   </a>
                 </span>
             </span>
@@ -236,152 +232,54 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <p>本文主要记录 C# 中的一些命名规范问题，文章内容会根据个人的学习进度进行更新。</p>
-<p>个人认为好的编程习惯是非常重要的，整洁规范的代码可以显著地提高可读性，一方面方便开发人员对代码进行维护，另一方面阅读这样的代码也可以使人身心愉悦。</p>
-<p><strong>PS：该命名规范有一定程度的个人主观因素，仅供参考。</strong></p>
+        <p>本文主要记录《LeetCode-中等-287-寻找重复数》这一题目的解法。</p>
+<p>涉及【Floyd 判圈算法】，又称【弗洛伊德的乌龟和兔子】，本质是【快慢指针】。</p>
 <a id="more"></a>
 
-<h2 id="类-class"><a href="#类-class" class="headerlink" title="类 class"></a>类 class</h2><p>使用帕斯卡命名规则。</p>
-<p>类名应该是能够反映类功能的名词，或名词短语。</p>
-<h3 id="字段-field"><a href="#字段-field" class="headerlink" title="字段 field"></a>字段 field</h3><p>字段一般是私有的，用 private 修饰。</p>
-<p>bool 类型的字段一般根据含义以 is / can / has 等作为前缀。</p>
-<p>bool 类型的方法同理。</p>
-<h4 id="私有字段-private-field"><a href="#私有字段-private-field" class="headerlink" title="私有字段 private field"></a>私有字段 private field</h4><p>以 “_” 作为前缀，使用驼峰命名规则。</p>
-<h4 id="公共字段-public-field"><a href="#公共字段-public-field" class="headerlink" title="公共字段 public field"></a>公共字段 public field</h4><p>使用帕斯卡命名规则。</p>
-<h3 id="属性-property"><a href="#属性-property" class="headerlink" title="属性 property"></a>属性 property</h3><p>使用帕斯卡命名规则。</p>
-<p>属性一般是公有的，用 public 修饰。</p>
-<h3 id="方法-method"><a href="#方法-method" class="headerlink" title="方法 method"></a>方法 method</h3><p>使用帕斯卡命名规则。</p>
-<p>方法名应该是动词，或者动宾短语。</p>
-<h4 id="动词的选择："><a href="#动词的选择：" class="headerlink" title="动词的选择："></a>动词的选择：</h4><table>
-<thead>
-<tr>
-<th>动词类别</th>
-<th>单词</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>添加/插入/创建/初始化/加载</td>
-<td>add、append、insert、create、initialize、load</td>
-</tr>
-<tr>
-<td>删除/销毁</td>
-<td>delete、remove、destroy、drop</td>
-</tr>
-<tr>
-<td>打开/开始/启动</td>
-<td>open、start</td>
-</tr>
-<tr>
-<td>关闭/停止</td>
-<td>close、stop</td>
-</tr>
-<tr>
-<td>获取/读取/查找/查询</td>
-<td>get、fetch、acquire、read、search、find、query</td>
-</tr>
-<tr>
-<td>设置/重置/放入/写入/释放/刷新</td>
-<td>set、reset、put、write、release、refresh</td>
-</tr>
-<tr>
-<td>发送/推送</td>
-<td>send、push</td>
-</tr>
-<tr>
-<td>接收/拉取</td>
-<td>receive、pull</td>
-</tr>
-<tr>
-<td>提交/撤销/取消</td>
-<td>submit、cancel</td>
-</tr>
-<tr>
-<td>收集/采集/选取/选择</td>
-<td>collect、pick、select</td>
-</tr>
-<tr>
-<td>提取/解析</td>
-<td>sub、extract、parse</td>
-</tr>
-<tr>
-<td>编码/解码</td>
-<td>encode、decode</td>
-</tr>
-<tr>
-<td>填充/打包/压缩</td>
-<td>fill、pack、compress</td>
-</tr>
-<tr>
-<td>清空/拆包/解压</td>
-<td>flush、clear、unpack、decompress</td>
-</tr>
-<tr>
-<td>增加/减少</td>
-<td>increase、decrease、reduce</td>
-</tr>
-<tr>
-<td>分隔/拼接</td>
-<td>split、join、concat</td>
-</tr>
-<tr>
-<td>过滤/校验/检测</td>
-<td>filter、valid、check</td>
-</tr>
-</tbody></table>
-<h4 id="名词的选择："><a href="#名词的选择：" class="headerlink" title="名词的选择："></a>名词的选择：</h4><table>
-<thead>
-<tr>
-<th>名词类别</th>
-<th>单词</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>容量/大小/长度</td>
-<td>capacity、size、length</td>
-</tr>
-<tr>
-<td>实例/上下文</td>
-<td>instance、context</td>
-</tr>
-<tr>
-<td>配置</td>
-<td>config、settings</td>
-</tr>
-<tr>
-<td>头部/前面/前一个/第一个</td>
-<td>header、front、previous、first</td>
-</tr>
-<tr>
-<td>尾部/后面/后一个/最后一个</td>
-<td>tail、back、next、last</td>
-</tr>
-<tr>
-<td>区间/区域/某一部分/范围/规模</td>
-<td>range、interval、region、area、section、scope、scale</td>
-</tr>
-<tr>
-<td>缓存/缓冲/会话</td>
-<td>cache、buffer、session</td>
-</tr>
-<tr>
-<td>本地/局部/全局</td>
-<td>local、global</td>
-</tr>
-<tr>
-<td>成员/元素</td>
-<td>member、element</td>
-</tr>
-<tr>
-<td>菜单/列表</td>
-<td>menu、list</td>
-</tr>
-<tr>
-<td>源/目标</td>
-<td>source、destination、target</td>
-</tr>
-</tbody></table>
-<h2 id="接口-interface"><a href="#接口-interface" class="headerlink" title="接口 interface"></a>接口 interface</h2><p>使用帕斯卡命名规则。</p>
-<p>以大写字母 I 开头。</p>
+<h2 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h2><p><a href="https://leetcode-cn.com/problems/find-the-duplicate-number/" target="_blank" rel="noopener">题目链接点击此处</a></p>
+<p>给定一个包含 n + 1 个整数的数组 nums，其数字都在 1 到 n 之间（包括 1 和 n），可知至少存在一个重复的整数。假设只有一个重复的整数，找出这个重复的数。</p>
+<p><strong>示例 1：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入: [1,3,4,2,2]</span><br><span class="line">输出: 2</span><br></pre></td></tr></table></figure>
+
+<p><strong>示例 2：</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">输入: [3,1,3,4,2]</span><br><span class="line">输出: 3</span><br></pre></td></tr></table></figure>
+
+<p><strong>说明：</strong></p>
+<ol>
+<li>不能更改原数组（假设数组是只读的）。</li>
+<li>只能使用额外的 O(1) 的空间。</li>
+<li>时间复杂度小于 O(n^2)。</li>
+<li>数组中只有一个重复的数字，但它可能不止重复出现一次。</li>
+</ol>
+<h2 id="解法"><a href="#解法" class="headerlink" title="解法"></a>解法</h2><p>题目说明中有许多限制，如果不看限制的话，还可以有两种解法，此处只提一下，不对这两种解法做讲解。</p>
+<ol>
+<li>排序：<ol>
+<li>排序后遍历数组，因为存在重复的元素，所以一定有相邻的元素相等，找到相等的元素即可。</li>
+<li>时间复杂度 O(nlogn)，空间复杂度 O(1)。</li>
+</ol>
+</li>
+<li>使用 Set 数据结构：<ol>
+<li>遍历数组，判断 Set 中是否存在当前元素，不存在则将该元素加入 Set 中，存在则说明该元素就是重复的数字。</li>
+<li>时间复杂度 O(n)，空间复杂度 O(n)。</li>
+</ol>
+</li>
+</ol>
+<h3 id="Floyd-判圈算法"><a href="#Floyd-判圈算法" class="headerlink" title="Floyd 判圈算法"></a>Floyd 判圈算法</h3><p>首先，我们可以将数组看作是一个链表，元素的值可以看作是指向下一个元素的索引。</p>
+<p>比如示例 1 中，nums[0] = 1，所以下一个访问的元素下标为 1，nums[1] = 3，所以再下一个访问的元素下标为 3，以此类推。</p>
+<p>于是我们设置两个指针，一个指针一次走一步，另一个指针一次走两步。</p>
+<p><strong>因为数组中存在重复的数字，所以会访问到同一个下标，导致产生环，环的入口就是重复的数字。</strong></p>
+<p>因此，一直访问下去，指针最终会处于循环内，即快慢指针最终会在循环内相遇。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> tortoise = <span class="number">0</span>; <span class="comment">// 慢指针</span></span><br><span class="line">tortoise = nums[tortoise]; <span class="comment">// 一次走一步</span></span><br><span class="line"><span class="keyword">int</span> hare = <span class="number">0</span>; <span class="comment">// 快指针</span></span><br><span class="line">hare = nums[nums[hare]]; <span class="comment">// 一次走两步</span></span><br></pre></td></tr></table></figure>
+
+<p>假设从起点到环的入口一共是 m 步，环的周长是 c 步。</p>
+<p>相遇时 tortoise（慢指针）一共走了 n 步，那么 hare（快指针）则走了 2n 步。</p>
+<p>因为此时 tortoise 和 hare 在环中的同一点，所以 hare 多走的 n 步相当于快了 tortoise 一或多圈。</p>
+<p><strong>所以 n 是 c 的倍数，即 n % c = 0。</strong></p>
+<p>而 tortoise 在循环内走的步数为 n - m，如果让 tortoise 再走 m 步，那么 tortoise 一定会回到环的起点。</p>
+<p>于是，此时再设置一个 finder 指针，从 0 开始，让 tortoise 和 finder 同步前进。</p>
+<p><strong>那么 m 步后，finder 和 tortoise 会在环的入口处相遇，而环的入口就是重复的数字。</strong></p>
+<h3 id="代码实现（C-语言描述）"><a href="#代码实现（C-语言描述）" class="headerlink" title="代码实现（C# 语言描述）"></a>代码实现（C# 语言描述）</h3><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">FindDuplicate</span>(<span class="params"><span class="keyword">int</span>[] nums</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">int</span> tortoise = nums[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">int</span> hare = nums[nums[<span class="number">0</span>]];</span><br><span class="line">    <span class="keyword">while</span> (tortoise != hare) &#123;</span><br><span class="line">        tortoise = nums[tortoise];</span><br><span class="line">        hare = nums[nums[hare]];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">int</span> finder = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">while</span> (tortoise != finder) &#123;</span><br><span class="line">        tortoise = nums[tortoise];</span><br><span class="line">        finder = nums[finder];</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> finder;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 
     </div>
 
@@ -391,7 +289,9 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/CSharp/" rel="tag"># CSharp</a>
+              <a href="/tags/LeetCode/" rel="tag"># LeetCode</a>
+              <a href="/tags/%E5%BF%AB%E6%85%A2%E6%8C%87%E9%92%88/" rel="tag"># 快慢指针</a>
+              <a href="/tags/%E7%AE%97%E6%B3%95/" rel="tag"># 算法</a>
           </div>
 
         
@@ -400,13 +300,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2020/01/07/set-up-personal-blog/" rel="prev" title="搭建个人博客 hexo + next + GitHub">
-      <i class="fa fa-chevron-left"></i> 搭建个人博客 hexo + next + GitHub
+    <a href="/2020/03/01/csharp-hashtable-dictionary/" rel="prev" title="C# 中 Hashtable 和 Dictionary 的区别">
+      <i class="fa fa-chevron-left"></i> C# 中 Hashtable 和 Dictionary 的区别
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2020/01/10/csharp-argument-and-parameter/" rel="next" title="实际参数和形式参数的定义，以及 C# 中的形式参数的分类">
-      实际参数和形式参数的定义，以及 C# 中的形式参数的分类 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -466,7 +363,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#类-class"><span class="nav-number">1.</span> <span class="nav-text">类 class</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#字段-field"><span class="nav-number">1.1.</span> <span class="nav-text">字段 field</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#私有字段-private-field"><span class="nav-number">1.1.1.</span> <span class="nav-text">私有字段 private field</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#公共字段-public-field"><span class="nav-number">1.1.2.</span> <span class="nav-text">公共字段 public field</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#属性-property"><span class="nav-number">1.2.</span> <span class="nav-text">属性 property</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法-method"><span class="nav-number">1.3.</span> <span class="nav-text">方法 method</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#动词的选择："><span class="nav-number">1.3.1.</span> <span class="nav-text">动词的选择：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#名词的选择："><span class="nav-number">1.3.2.</span> <span class="nav-text">名词的选择：</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接口-interface"><span class="nav-number">2.</span> <span class="nav-text">接口 interface</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#题目"><span class="nav-number">1.</span> <span class="nav-text">题目</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#解法"><span class="nav-number">2.</span> <span class="nav-text">解法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Floyd-判圈算法"><span class="nav-number">2.1.</span> <span class="nav-text">Floyd 判圈算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#代码实现（C-语言描述）"><span class="nav-number">2.2.</span> <span class="nav-text">代码实现（C# 语言描述）</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
