@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://daixxTech.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="本文主要记录两种常用的缓存算法 LRU 与 LFU 的具体实现（C# 语言描述）。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="缓存算法 LRU 与 LFU">
+<meta property="og:url" content="https://daixxtech.github.io/2020/06/15/cache-algorithm-lru-and-lfu-implementation-csharp/index.html">
+<meta property="og:site_name" content="daixxTech&#39;s blog">
+<meta property="og:description" content="本文主要记录两种常用的缓存算法 LRU 与 LFU 的具体实现（C# 语言描述）。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-06-15T11:07:39.000Z">
+<meta property="article:modified_time" content="2020-06-15T16:46:36.431Z">
+<meta property="article:author" content="daixxTech">
+<meta property="article:tag" content="CSharp">
+<meta property="article:tag" content="算法">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://daixxtech.github.io/2020/06/15/cache-algorithm-lru-and-lfu-implementation-csharp/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>缓存算法 LRU 与 LFU | daixxTech's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">daixxTech's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">学习与记录。</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://daixxtech.github.io/2020/06/15/cache-algorithm-lru-and-lfu-implementation-csharp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="daixxTech">
+      <meta itemprop="description" content="谦虚为人，谦逊待人。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="daixxTech's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          缓存算法 LRU 与 LFU
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-06-15 19:07:39" itemprop="dateCreated datePublished" datetime="2020-06-15T19:07:39+08:00">2020-06-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-06-16 00:46:36" itemprop="dateModified" datetime="2020-06-16T00:46:36+08:00">2020-06-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
+                  </a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/06/15/cache-algorithm-lru-and-lfu-implementation-csharp/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/06/15/cache-algorithm-lru-and-lfu-implementation-csharp/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文主要记录两种常用的缓存算法 LRU 与 LFU 的具体实现（C# 语言描述）。</p>
+<a id="more"></a>
+
+<h2 id="LRU"><a href="#LRU" class="headerlink" title="LRU"></a>LRU</h2><p>全称 Least Recently Used（最近最少使用），当缓存溢出时选择最近最少使用的对象进行淘汰。</p>
+<p><a href="https://leetcode-cn.com/problems/lru-cache/" target="_blank" rel="noopener">LeetCode_中等_146_LRU缓存机制</a></p>
+<p>可以使用双向链表来实现 LRU 机制；</p>
+<p>get 方法：</p>
+<ol>
+<li>key 不存在则返回 -1；</li>
+<li>key 存在则返回对应的 value，并将该节点从链表中移除，然后添加到链表尾部（将该节点置为最近使用的节点）；</li>
+</ol>
+<p>put 方法：</p>
+<ol>
+<li>key 存在则更新对应的 value，并将该节点从链表中移除，然后添加到链表尾部；</li>
+<li>key 不存在则直接将新的键值对添加到链表尾部。</li>
+</ol>
+<p>这样一来链表头部的对象就是最近最少使用的对象了，当缓存溢出时，直接移除链表头部的对象即可。</p>
+<p>双向链表添加和删除节点的时间复杂度为 O(1)，但是查找 key 的时间复杂度是 O(n)，为了使 get 方法和 put 方法的时间复杂度达到 O(1)，可以使用哈希表辅助进行实现。通过哈希表查找到 key 对应的链表中的节点，然后再对节点进行操作即可。</p>
+<h3 id="代码（C-语言描述）"><a href="#代码（C-语言描述）" class="headerlink" title="代码（C# 语言描述）"></a>代码（C# 语言描述）</h3><h4 id="Pair-类（键值对）"><a href="#Pair-类（键值对）" class="headerlink" title="Pair 类（键值对）"></a>Pair 类（键值对）</h4><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Pair</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Pair</span>(<span class="params"><span class="keyword">int</span> key, <span class="keyword">int</span> <span class="keyword">value</span></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Key = key;</span><br><span class="line">        Value = <span class="keyword">value</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Key &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Value &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="LRUCache-类"><a href="#LRUCache-类" class="headerlink" title="LRUCache 类"></a>LRUCache 类</h4><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">LRUCache</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="keyword">int</span> _capacity; <span class="comment">// 容量</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> LinkedList&lt;Pair&gt; _cache; <span class="comment">// 缓存链表</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> Dictionary&lt;<span class="keyword">int</span>, LinkedListNode&lt;Pair&gt;&gt; _nodeDic; <span class="comment">// 节点字典</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LRUCache</span>(<span class="params"><span class="keyword">int</span> capacity</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        _capacity = capacity;</span><br><span class="line">        _cache = <span class="keyword">new</span> LinkedList&lt;Pair&gt;();</span><br><span class="line">        _nodeDic = <span class="keyword">new</span> Dictionary&lt;<span class="keyword">int</span>, LinkedListNode&lt;Pair&gt;&gt;(capacity);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">Get</span>(<span class="params"><span class="keyword">int</span> key</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        _nodeDic.TryGetValue(key, <span class="keyword">out</span> <span class="keyword">var</span> node);</span><br><span class="line">        <span class="comment">// 不存在 key 则返回 -1</span></span><br><span class="line">        <span class="keyword">if</span> (node == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 存在 key 则更新该节点</span></span><br><span class="line">        _cache.Remove(node);</span><br><span class="line">        _cache.AddLast(node);</span><br><span class="line">        <span class="keyword">return</span> node.Value.Value;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Put</span>(<span class="params"><span class="keyword">int</span> key, <span class="keyword">int</span> <span class="keyword">value</span></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        _nodeDic.TryGetValue(key, <span class="keyword">out</span> <span class="keyword">var</span> node);</span><br><span class="line">        <span class="comment">// 存在 key</span></span><br><span class="line">        <span class="keyword">if</span> (node != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="comment">// 更新该节点</span></span><br><span class="line">            node.Value.Value = <span class="keyword">value</span>;</span><br><span class="line">            _cache.Remove(node);</span><br><span class="line">            _cache.AddLast(node);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 不存在 key</span></span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 容量已满，则移除链表的头节点</span></span><br><span class="line">            <span class="keyword">if</span> (_cache.Count == _capacity) &#123;</span><br><span class="line">                _nodeDic.Remove(_cache.First.Value.Key);</span><br><span class="line">                _cache.RemoveFirst();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 将新的节点添加到链表尾部</span></span><br><span class="line">            node = <span class="keyword">new</span> LinkedListNode&lt;Pair&gt;(<span class="keyword">new</span> Pair(key, <span class="keyword">value</span>));</span><br><span class="line">            _nodeDic.Add(key, node);</span><br><span class="line">            _cache.AddLast(node);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="LFU"><a href="#LFU" class="headerlink" title="LFU"></a>LFU</h2><p>全称 Least Frequently Used（最近最不常使用），当缓存溢出时选择最近最不常使用的对象进行淘汰。</p>
+<p><a href="https://leetcode-cn.com/problems/lfu-cache/" target="_blank" rel="noopener">LeetCode_困难_460_LFU缓存</a></p>
+<p>相比于 LRU 算法多了一个条件，即对象的使用频率（frequency）；</p>
+<p>因此，可以使用多个双向链表来实现，每个链表对应不同的频次，链表及其频率作为键值对存入哈希表中；</p>
+<p>当节点被访问时，将节点从旧链表中移除，频率 +1，然后加入对应频率的新链表中。</p>
+<h3 id="代码（C-语言描述）-1"><a href="#代码（C-语言描述）-1" class="headerlink" title="代码（C# 语言描述）"></a>代码（C# 语言描述）</h3><h4 id="Pair-类（键值对）-1"><a href="#Pair-类（键值对）-1" class="headerlink" title="Pair 类（键值对）"></a>Pair 类（键值对）</h4><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">Pair</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Pair</span>(<span class="params"><span class="keyword">int</span> key, <span class="keyword">int</span> <span class="keyword">value</span></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        Key = key;</span><br><span class="line">        Value = <span class="keyword">value</span>;</span><br><span class="line">        Frequency = <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Key &#123; <span class="keyword">get</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Value &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Frequency &#123; <span class="keyword">get</span>; <span class="keyword">internal</span> <span class="keyword">set</span>; &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="LFUCache-类"><a href="#LFUCache-类" class="headerlink" title="LFUCache 类"></a>LFUCache 类</h4><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">LFUCache</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> <span class="keyword">int</span> _capacity; <span class="comment">// 容量</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> Dictionary&lt;<span class="keyword">int</span>, LinkedList&lt;Pair&gt;&gt; _cache; <span class="comment">// 缓存容器</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">readonly</span> Dictionary&lt;<span class="keyword">int</span>, LinkedListNode&lt;Pair&gt;&gt; _nodeDic; <span class="comment">// 链表字典</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> _minFrequency; <span class="comment">// 最小频率</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">LFUCache</span>(<span class="params"><span class="keyword">int</span> capacity</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        _capacity = capacity;</span><br><span class="line">        _cache = <span class="keyword">new</span> Dictionary&lt;<span class="keyword">int</span>, LinkedList&lt;Pair&gt;&gt;(capacity);</span><br><span class="line">        _nodeDic = <span class="keyword">new</span> Dictionary&lt;<span class="keyword">int</span>, LinkedListNode&lt;Pair&gt;&gt;(capacity);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">Get</span>(<span class="params"><span class="keyword">int</span> key</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        _nodeDic.TryGetValue(key, <span class="keyword">out</span> <span class="keyword">var</span> node);</span><br><span class="line">        <span class="comment">// 不存在 key 则返回 -1</span></span><br><span class="line">        <span class="keyword">if</span> (node == <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 存在 key 则更新该节点</span></span><br><span class="line">        VisitNode(node);</span><br><span class="line">        <span class="keyword">return</span> node.Value.Value; <span class="comment">// 返回该节点的值</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">Put</span>(<span class="params"><span class="keyword">int</span> key, <span class="keyword">int</span> <span class="keyword">value</span></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="comment">// 容量为 0 则直接返回</span></span><br><span class="line">        <span class="keyword">if</span> (_capacity == <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        _nodeDic.TryGetValue(key, <span class="keyword">out</span> <span class="keyword">var</span> node);</span><br><span class="line">        <span class="comment">// 存在 key</span></span><br><span class="line">        <span class="keyword">if</span> (node != <span class="literal">null</span>) &#123;</span><br><span class="line">            <span class="comment">// 更新该节点</span></span><br><span class="line">            node.Value.Value = <span class="keyword">value</span>;</span><br><span class="line">            VisitNode(node);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 不存在 key</span></span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// 容量已满，则移除频率最小的链表的头节点</span></span><br><span class="line">            <span class="keyword">if</span> (_nodeDic.Count == _capacity) &#123;</span><br><span class="line">                <span class="keyword">var</span> list = _cache[_minFrequency];</span><br><span class="line">                _nodeDic.Remove(list.First.Value.Key);</span><br><span class="line">                list.RemoveFirst();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 将新的节点添加到频率为 1 的链表的尾部</span></span><br><span class="line">            node = <span class="keyword">new</span> LinkedListNode&lt;Pair&gt;(<span class="keyword">new</span> Pair(key, <span class="keyword">value</span>));</span><br><span class="line">            _nodeDic.Add(key, node);</span><br><span class="line">            _cache.TryGetValue(<span class="number">1</span>, <span class="keyword">out</span> <span class="keyword">var</span> corList);</span><br><span class="line">            <span class="keyword">if</span> (corList == <span class="literal">null</span>) &#123;</span><br><span class="line">                corList = <span class="keyword">new</span> LinkedList&lt;Pair&gt;();</span><br><span class="line">                _cache.Add(<span class="number">1</span>, corList);</span><br><span class="line">            &#125;</span><br><span class="line">            corList.AddLast(node);</span><br><span class="line">            _minFrequency = <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">VisitNode</span>(<span class="params">LinkedListNode&lt;Pair&gt; node</span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="comment">// 从旧链表中移除节点，并更新最小频率</span></span><br><span class="line">        <span class="keyword">var</span> list = _cache[node.Value.Frequency];</span><br><span class="line">        list.Remove(node);</span><br><span class="line">        <span class="keyword">if</span> (list.Count == <span class="number">0</span> &amp;&amp; node.Value.Frequency == _minFrequency) &#123;</span><br><span class="line">            _minFrequency = node.Value.Frequency + <span class="number">1</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 更新节点的频率，将节点加入新链表</span></span><br><span class="line">        ++node.Value.Frequency;</span><br><span class="line">        _cache.TryGetValue(node.Value.Frequency, <span class="keyword">out</span> <span class="keyword">var</span> corList);</span><br><span class="line">        <span class="keyword">if</span> (corList == <span class="literal">null</span>) &#123;</span><br><span class="line">            corList = <span class="keyword">new</span> LinkedList&lt;Pair&gt;();</span><br><span class="line">            _cache.Add(node.Value.Frequency, corList);</span><br><span class="line">        &#125;</span><br><span class="line">        corList.AddLast(node);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CSharp/" rel="tag"># CSharp</a>
+              <a href="/tags/%E7%AE%97%E6%B3%95/" rel="tag"># 算法</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/03/28/priority-queue-implementation-csharp/" rel="prev" title="优先队列 Priority Queue">
+      <i class="fa fa-chevron-left"></i> 优先队列 Priority Queue
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#LRU"><span class="nav-number">1.</span> <span class="nav-text">LRU</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#代码（C-语言描述）"><span class="nav-number">1.1.</span> <span class="nav-text">代码（C# 语言描述）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Pair-类（键值对）"><span class="nav-number">1.1.1.</span> <span class="nav-text">Pair 类（键值对）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LRUCache-类"><span class="nav-number">1.1.2.</span> <span class="nav-text">LRUCache 类</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#LFU"><span class="nav-number">2.</span> <span class="nav-text">LFU</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#代码（C-语言描述）-1"><span class="nav-number">2.1.</span> <span class="nav-text">代码（C# 语言描述）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Pair-类（键值对）-1"><span class="nav-number">2.1.1.</span> <span class="nav-text">Pair 类（键值对）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#LFUCache-类"><span class="nav-number">2.1.2.</span> <span class="nav-text">LFUCache 类</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="daixxTech"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">daixxTech</p>
+  <div class="site-description" itemprop="description">谦虚为人，谦逊待人。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/daixxTech" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;daixxTech" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">daixxTech</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.0
+  </div>
+-->
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'rp0gVwks1NRNp7oxE6wzKCgH-gzGzoHsz',
+      appKey: '6P90yV0hLER2qU2SwSNFVPVm',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

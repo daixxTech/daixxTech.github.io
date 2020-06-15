@@ -49,14 +49,14 @@
   <meta name="description" content="本文主要记录在个人项目的游戏中对时间系统的实现。 尝试了 Timer 类和协程（Coroutine）两种实现方式，Timer 类存在一定的问题，因此最终采用了协程的方式。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Unity3D 中对时间系统的两种实现方式的分析">
-<meta property="og:url" content="https://daixxtech.github.io/2020/03/09/unity3d-timer-coroutine/index.html">
+<meta property="og:url" content="https://daixxtech.github.io/2020/03/09/unity3d-time-system-timer-coroutine/index.html">
 <meta property="og:site_name" content="daixxTech&#39;s blog">
 <meta property="og:description" content="本文主要记录在个人项目的游戏中对时间系统的实现。 尝试了 Timer 类和协程（Coroutine）两种实现方式，Timer 类存在一定的问题，因此最终采用了协程的方式。">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://daixxtech.github.io/2020/03/09/unity3d-timer-coroutine/timer-test.gif">
-<meta property="og:image" content="https://daixxtech.github.io/2020/03/09/unity3d-timer-coroutine/timer-test-debug.png">
-<meta property="og:image" content="https://daixxtech.github.io/2020/03/09/unity3d-timer-coroutine/timer-test-multi-thread.gif">
-<meta property="og:image" content="https://daixxtech.github.io/2020/03/09/unity3d-timer-coroutine/timer-test-coroutine.gif">
+<meta property="og:image" content="https://daixxtech.github.io/2020/03/09/unity3d-time-system-timer-coroutine/timer-test.gif">
+<meta property="og:image" content="https://daixxtech.github.io/2020/03/09/unity3d-time-system-timer-coroutine/timer-test-debug.png">
+<meta property="og:image" content="https://daixxtech.github.io/2020/03/09/unity3d-time-system-timer-coroutine/timer-test-multi-thread.gif">
+<meta property="og:image" content="https://daixxtech.github.io/2020/03/09/unity3d-time-system-timer-coroutine/timer-test-coroutine.gif">
 <meta property="article:published_time" content="2020-03-09T13:59:22.000Z">
 <meta property="article:modified_time" content="2020-03-09T16:15:20.348Z">
 <meta property="article:author" content="daixxTech">
@@ -65,9 +65,9 @@
 <meta property="article:tag" content="多线程">
 <meta property="article:tag" content="协程">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://daixxtech.github.io/2020/03/09/unity3d-timer-coroutine/timer-test.gif">
+<meta name="twitter:image" content="https://daixxtech.github.io/2020/03/09/unity3d-time-system-timer-coroutine/timer-test.gif">
 
-<link rel="canonical" href="https://daixxtech.github.io/2020/03/09/unity3d-timer-coroutine/">
+<link rel="canonical" href="https://daixxtech.github.io/2020/03/09/unity3d-time-system-timer-coroutine/">
 
 
 <script id="page-configurations">
@@ -189,7 +189,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://daixxtech.github.io/2020/03/09/unity3d-timer-coroutine/">
+    <link itemprop="mainEntityOfPage" href="https://daixxtech.github.io/2020/03/09/unity3d-time-system-timer-coroutine/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.png">
@@ -242,8 +242,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2020/03/09/unity3d-timer-coroutine/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/03/09/unity3d-timer-coroutine/" itemprop="commentCount"></span>
+    <a title="valine" href="/2020/03/09/unity3d-time-system-timer-coroutine/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/03/09/unity3d-time-system-timer-coroutine/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -272,12 +272,12 @@
 
 <h3 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h3><p>左边是 Text 组件，右边是对应的 Inspector 区域。</p>
 <p>可以看到，Inspector 中 Text 组件的文本内容会发生改变，但是无法更新在 UI 上，具体效果如下图所示：</p>
-<p><img src="/2020/03/09/unity3d-timer-coroutine/timer-test.gif" alt="timer-test"></p>
+<p><img src="/2020/03/09/unity3d-time-system-timer-coroutine/timer-test.gif" alt="timer-test"></p>
 <h3 id="原因分析"><a href="#原因分析" class="headerlink" title="原因分析"></a>原因分析</h3><p>为什么会出现这样的情况呢？我们对 TimerTest 类的 GetTimeTxt 方法做一定的修改。</p>
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">GetTimeTxt</span>(<span class="params"><span class="keyword">object</span> sender, ElapsedEventArgs e</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Debug.Log(<span class="string">"Before Updating."</span>);</span><br><span class="line">    TimeTxt.text = <span class="string">$"Day <span class="subst">&#123;Data.Days&#125;</span> - <span class="subst">&#123;Data.Hours:D2&#125;</span> : <span class="subst">&#123;Data.Minutes:D2&#125;</span>"</span>;</span><br><span class="line">    Debug.Log(<span class="string">"After Updating."</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>加上了两句控制台输出，再次运行会发现：</p>
-<p><img src="/2020/03/09/unity3d-timer-coroutine/timer-test-debug.png" alt="timer-test-debug"></p>
+<p><img src="/2020/03/09/unity3d-time-system-timer-coroutine/timer-test-debug.png" alt="timer-test-debug"></p>
 <p>只有 “Before Updating.” 进行了输出，而 “After Updating.” 并没有输出。</p>
 <p>原因是后续我在使用协程的时侯，才突然意识到的。</p>
 <p>协程是同步的，但 Timer 类并不是。Timer 类是多线程的，而在 Unity3D 中，只允许主线程对组件进行访问。</p>
@@ -285,7 +285,7 @@
 <figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> Thread Thread &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Start</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// Data.Timer.Elapsed += GetTimeTxt;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Update</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        Thread = <span class="keyword">new</span> Thread(<span class="keyword">new</span> ThreadStart(GetTimeTxt));</span><br><span class="line">        Thread.Start();</span><br><span class="line">    &#125; <span class="keyword">while</span> (!Thread.IsAlive);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>效果如下：</p>
-<p><img src="/2020/03/09/unity3d-timer-coroutine/timer-test-multi-thread.gif" alt="timer-test-multi-thread"></p>
+<p><img src="/2020/03/09/unity3d-time-system-timer-coroutine/timer-test-multi-thread.gif" alt="timer-test-multi-thread"></p>
 <p>Text 组件的文本内容在更新，但是 UI 上只更新了最初的一次。</p>
 <p>同时 Unity3D 也抛出了异常，停止后发现，Before 消息的次数 = Exception 消息的次数 + After 消息的次数。</p>
 <p>但是为什么 UI 会更新，且只更新了最初的一次呢？为什么这次的多线程可以执行至 After 部分？</p>
@@ -295,7 +295,7 @@
 <h3 id="TimerTestCoroutine-类"><a href="#TimerTestCoroutine-类" class="headerlink" title="TimerTestCoroutine 类"></a>TimerTestCoroutine 类</h3><figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">using</span> System.Collections;</span><br><span class="line"><span class="keyword">using</span> UnityEngine;</span><br><span class="line"><span class="keyword">using</span> UnityEngine.UI;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title">TimerTestCoroutine</span> : <span class="title">MonoBehaviour</span></span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">readonly</span> WaitForSeconds DotFiveSeconds = <span class="keyword">new</span> WaitForSeconds(<span class="number">0.5F</span>);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> TimerTestCoroutine _instance;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Text TimeTxt;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> TimerTestCoroutine Instance =&gt;</span><br><span class="line">        _instance ?? (_instance = GameObject.Find(<span class="string">"Canvas/Time"</span>).GetComponent&lt;TimerTestCoroutine&gt;());</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Coroutine GetTimeTxtCoroutine &#123; <span class="keyword">get</span>; <span class="keyword">set</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Days =&gt; TotalMinutes / <span class="number">3600</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Hours =&gt; TotalMinutes % <span class="number">3600</span> / <span class="number">60</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> Minutes =&gt; TotalMinutes % <span class="number">60</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">int</span> TotalMinutes &#123; <span class="keyword">get</span>; <span class="keyword">private</span> <span class="keyword">set</span>; &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Awake</span>(<span class="params"></span>)</span> &#123; TimeTxt = transform.GetComponent&lt;Text&gt;(); &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">Start</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        TotalMinutes = <span class="number">360</span>;</span><br><span class="line">        GetTimeTxtCoroutine = StartCoroutine(GetTimeTxt());</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> IEnumerator <span class="title">GetTimeTxt</span>(<span class="params"></span>)</span></span><br><span class="line"><span class="function"></span>    &#123;</span><br><span class="line">        <span class="keyword">while</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">            TimeTxt.text = <span class="string">$"Day <span class="subst">&#123;Days&#125;</span> - <span class="subst">&#123;Hours:D2&#125;</span> : <span class="subst">&#123;Minutes:D2&#125;</span>"</span>;</span><br><span class="line">            <span class="keyword">yield</span> <span class="keyword">return</span> DotFiveSeconds;</span><br><span class="line">                    TotalMinutes++;</span><br><span class="line">		&#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="最终效果-1"><a href="#最终效果-1" class="headerlink" title="最终效果"></a>最终效果</h3><p>这次的效果就是目的效果了。</p>
-<p><img src="/2020/03/09/unity3d-timer-coroutine/timer-test-coroutine.gif" alt="timer-test-coroutine"></p>
+<p><img src="/2020/03/09/unity3d-time-system-timer-coroutine/timer-test-coroutine.gif" alt="timer-test-coroutine"></p>
 <h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>这次 Timer 类的使用经验让我对 Unity3D 的了解更深了一步，无论是引擎本身，还是多线程方面，或者协程方面。</p>
 <p>同时也让我意识到我学习的深度还是太浅了，虽然有一定的 Unity3D 使用经验，但也仅仅是使用经验而已，如果要学习，那要的就不只是使用经验，而是了解更具体的实现。</p>
 
@@ -323,8 +323,8 @@
       <i class="fa fa-chevron-left"></i> LeetCode-中等-287-寻找重复数【Floyd 判圈算法】
     </a></div>
       <div class="post-nav-item">
-    <a href="/2020/03/28/csharp-priority-queue-implementation/" rel="next" title="使用 C# 实现优先队列">
-      使用 C# 实现优先队列 <i class="fa fa-chevron-right"></i>
+    <a href="/2020/03/28/priority-queue-implementation-csharp/" rel="next" title="优先队列 Priority Queue">
+      优先队列 Priority Queue <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -402,14 +402,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-count">9</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">

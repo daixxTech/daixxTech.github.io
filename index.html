@@ -178,7 +178,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://daixxtech.github.io/2020/03/28/csharp-priority-queue-implementation/">
+    <link itemprop="mainEntityOfPage" href="https://daixxtech.github.io/2020/06/15/cache-algorithm-lru-and-lfu-implementation-csharp/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.png">
@@ -192,7 +192,7 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/03/28/csharp-priority-queue-implementation/" class="post-title-link" itemprop="url">使用 C# 实现优先队列</a>
+            <a href="/2020/06/15/cache-algorithm-lru-and-lfu-implementation-csharp/" class="post-title-link" itemprop="url">缓存算法 LRU 与 LFU</a>
         </h1>
 
         <div class="post-meta">
@@ -201,18 +201,24 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-03-28 01:12:06 / 修改时间：01:20:07" itemprop="dateCreated datePublished" datetime="2020-03-28T01:12:06+08:00">2020-03-28</time>
+              <time title="创建时间：2020-06-15 19:07:39" itemprop="dateCreated datePublished" datetime="2020-06-15T19:07:39+08:00">2020-06-15</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-06-16 00:46:36" itemprop="dateModified" datetime="2020-06-16T00:46:36+08:00">2020-06-16</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/CSharp/" itemprop="url" rel="index">
-                    <span itemprop="name">CSharp</span>
+                  <a href="/categories/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index">
+                    <span itemprop="name">算法</span>
                   </a>
                 </span>
             </span>
@@ -226,8 +232,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2020/03/28/csharp-priority-queue-implementation/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/03/28/csharp-priority-queue-implementation/" itemprop="commentCount"></span>
+    <a title="valine" href="/2020/06/15/cache-algorithm-lru-and-lfu-implementation-csharp/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/06/15/cache-algorithm-lru-and-lfu-implementation-csharp/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -242,12 +248,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>本文主要记录使用 C# 对优先队列的基础实现，其本质是二叉堆，根据比较器不同对应大根堆或小根堆。</p>
-<p>做题时遇到了可以使用优先队列的题目，然而发现 .Net 并不提供优先队列，所以就尝试自己手写了一个。</p>
-<p>希望可以加深自己对优先队列结构以及堆结构的理解。</p>
+          <p>本文主要记录两种常用的缓存算法 LRU 与 LFU 的具体实现（C# 语言描述）。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/03/28/csharp-priority-queue-implementation/#more" rel="contents">
+              <a class="btn" href="/2020/06/15/cache-algorithm-lru-and-lfu-implementation-csharp/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -271,7 +275,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://daixxtech.github.io/2020/03/09/unity3d-timer-coroutine/">
+    <link itemprop="mainEntityOfPage" href="https://daixxtech.github.io/2020/03/28/priority-queue-implementation-csharp/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.png">
@@ -285,7 +289,104 @@
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
           
-            <a href="/2020/03/09/unity3d-timer-coroutine/" class="post-title-link" itemprop="url">Unity3D 中对时间系统的两种实现方式的分析</a>
+            <a href="/2020/03/28/priority-queue-implementation-csharp/" class="post-title-link" itemprop="url">优先队列 Priority Queue</a>
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-03-28 01:12:06" itemprop="dateCreated datePublished" datetime="2020-03-28T01:12:06+08:00">2020-03-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-06-16 00:46:58" itemprop="dateModified" datetime="2020-06-16T00:46:58+08:00">2020-06-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构</span>
+                  </a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/03/28/priority-queue-implementation-csharp/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/03/28/priority-queue-implementation-csharp/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>本文主要记录优先队列的基础实现（C# 语言描述）。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2020/03/28/priority-queue-implementation-csharp/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+        
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block home" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://daixxtech.github.io/2020/03/09/unity3d-time-system-timer-coroutine/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="daixxTech">
+      <meta itemprop="description" content="谦虚为人，谦逊待人。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="daixxTech's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          
+            <a href="/2020/03/09/unity3d-time-system-timer-coroutine/" class="post-title-link" itemprop="url">Unity3D 中对时间系统的两种实现方式的分析</a>
         </h1>
 
         <div class="post-meta">
@@ -325,8 +426,8 @@
       </span>
       <span class="post-meta-item-text">Valine：</span>
     
-    <a title="valine" href="/2020/03/09/unity3d-timer-coroutine/#comments" itemprop="discussionUrl">
-      <span class="post-comments-count valine-comment-count" data-xid="/2020/03/09/unity3d-timer-coroutine/" itemprop="commentCount"></span>
+    <a title="valine" href="/2020/03/09/unity3d-time-system-timer-coroutine/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/03/09/unity3d-time-system-timer-coroutine/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -345,7 +446,7 @@
 <p>尝试了 Timer 类和协程（Coroutine）两种实现方式，Timer 类存在一定的问题，因此最终采用了协程的方式。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2020/03/09/unity3d-timer-coroutine/#more" rel="contents">
+              <a class="btn" href="/2020/03/09/unity3d-time-system-timer-coroutine/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -392,10 +493,16 @@
                 <i class="fa fa-calendar-o"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-03-02 21:03:01 / 修改时间：21:08:25" itemprop="dateCreated datePublished" datetime="2020-03-02T21:03:01+08:00">2020-03-02</time>
+              <time title="创建时间：2020-03-02 21:03:01" itemprop="dateCreated datePublished" datetime="2020-03-02T21:03:01+08:00">2020-03-02</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-06-16 00:18:51" itemprop="dateModified" datetime="2020-06-16T00:18:51+08:00">2020-06-16</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="fa fa-folder-o"></i>
@@ -783,7 +890,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-01-21 19:41:21" itemprop="dateModified" datetime="2020-01-21T19:41:21+08:00">2020-01-21</time>
+                <time title="修改时间：2020-05-24 21:42:23" itemprop="dateModified" datetime="2020-05-24T21:42:23+08:00">2020-05-24</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1014,14 +1121,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-count">9</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
