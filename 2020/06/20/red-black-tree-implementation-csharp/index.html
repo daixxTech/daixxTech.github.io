@@ -1,0 +1,619 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css">
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    hostname: new URL('https://daixxTech.github.io').hostname,
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.7.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"always","padding":18,"offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    comments: {"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}
+  };
+</script>
+
+  <meta name="description" content="本文主要记录红黑树插入删除后的修正操作详解，以及对应的实现（C#）。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="红黑树插入删除后的修正操作详解">
+<meta property="og:url" content="https://daixxtech.github.io/2020/06/20/red-black-tree-implementation-csharp/index.html">
+<meta property="og:site_name" content="daixxTech&#39;s blog">
+<meta property="og:description" content="本文主要记录红黑树插入删除后的修正操作详解，以及对应的实现（C#）。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://daixxtech.github.io/2020/06/20/red-black-tree-implementation-csharp/insert-case-1.jpg">
+<meta property="og:image" content="https://daixxtech.github.io/2020/06/20/red-black-tree-implementation-csharp/insert-case-2.jpg">
+<meta property="og:image" content="https://daixxtech.github.io/2020/06/20/red-black-tree-implementation-csharp/insert-case-3.jpg">
+<meta property="og:image" content="https://daixxtech.github.io/2020/06/20/red-black-tree-implementation-csharp/delete-case-1.jpg">
+<meta property="og:image" content="https://daixxtech.github.io/2020/06/20/red-black-tree-implementation-csharp/delete-case-2.jpg">
+<meta property="og:image" content="https://daixxtech.github.io/2020/06/20/red-black-tree-implementation-csharp/delete-case-3.jpg">
+<meta property="og:image" content="https://daixxtech.github.io/2020/06/20/red-black-tree-implementation-csharp/delete-case-4.jpg">
+<meta property="article:published_time" content="2020-06-19T16:06:43.040Z">
+<meta property="article:modified_time" content="2020-06-19T16:33:17.115Z">
+<meta property="article:author" content="daixxTech">
+<meta property="article:tag" content="CSharp">
+<meta property="article:tag" content="树">
+<meta property="article:tag" content="数据结构">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://daixxtech.github.io/2020/06/20/red-black-tree-implementation-csharp/insert-case-1.jpg">
+
+<link rel="canonical" href="https://daixxtech.github.io/2020/06/20/red-black-tree-implementation-csharp/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true
+  };
+</script>
+
+  <title>红黑树插入删除后的修正操作详解 | daixxTech's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">daixxTech's blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+        <p class="site-subtitle">学习与记录。</p>
+  </div>
+
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-fw fa-home"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-fw fa-tags"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-fw fa-th"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-fw fa-archive"></i>归档</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content">
+            
+
+  <div class="posts-expand">
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block " lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://daixxtech.github.io/2020/06/20/red-black-tree-implementation-csharp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="daixxTech">
+      <meta itemprop="description" content="谦虚为人，谦逊待人。">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="daixxTech's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          红黑树插入删除后的修正操作详解
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-06-20 00:06:43 / 修改时间：00:33:17" itemprop="dateCreated datePublished" datetime="2020-06-20T00:06:43+08:00">2020-06-20</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" itemprop="url" rel="index">
+                    <span itemprop="name">数据结构</span>
+                  </a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="fa fa-comment-o"></i>
+      </span>
+      <span class="post-meta-item-text">Valine：</span>
+    
+    <a title="valine" href="/2020/06/20/red-black-tree-implementation-csharp/#comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2020/06/20/red-black-tree-implementation-csharp/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>本文主要记录红黑树插入删除后的修正操作详解，以及对应的实现（C#）。</p>
+<a id="more"></a>
+
+<h2 id="红黑树的规则"><a href="#红黑树的规则" class="headerlink" title="红黑树的规则"></a>红黑树的规则</h2><p>首先明确一下红黑树的规则：</p>
+<ol>
+<li>每个节点不是红色就是黑色；</li>
+<li>根节点一定为黑色；</li>
+<li>如果节点为红色，其子节点一定为黑色；<ol>
+<li>红黑树的任何一条路径上不存在连续的两个红色节点。</li>
+</ol>
+</li>
+<li>叶子节点一定为黑色（此处的叶子节点指无值节点 NIL）；</li>
+<li>从根节点到叶节点的每条路径，必须包含相同数目的黑色节点。<ol>
+<li>红黑树的最长路径长度最多为最短路径长度的两倍，最长路径黑红节点交替，最短路径节点全黑。</li>
+</ol>
+</li>
+</ol>
+<h2 id="插入修正"><a href="#插入修正" class="headerlink" title="插入修正"></a>插入修正</h2><p>设祖父节点为 grand，父节点为 parent，叔叔节点为 uncle，插入的节点为 node。</p>
+<p><strong>关于红黑树的插入操作，node 的颜色选择：</strong></p>
+<ol>
+<li>node 默认为黑色的话，那么 node 插入后一定会增加某条路径上的黑色节点数量，因此每一次的插入都需要进行修正；</li>
+<li>node 默认为红色的话，只有当 parent 为红色时，才会违反红黑树的规则，才需要进行修正。</li>
+</ol>
+<p>所以 node 默认为红色。</p>
+<p><strong>接下来再看插入后的修正操作</strong>：</p>
+<p>因为红黑树以黑色节点的数量来维持平衡，所以：</p>
+<ol>
+<li>当 parent 为黑色时，node 插入后，各路径的黑色节点数量不变，因此不会对红黑树的平衡产生影响，不需要进行修正；</li>
+<li>当 parent 为红色时，因为红色节点的两个子节点只能为黑色节点，而 node 默认为红色，因此会违反红黑树的规则，需要进行修正。</li>
+</ol>
+<p><strong>另外，关于 uncle 的说明：</strong></p>
+<p>如果 uncle 为黑色，那么 uncle 一定为 NIL 节点，因为 parent 为红色，所以有两个黑色子树，而 node 既然能插入到 parent 下方，说明 parent 最多存在一个有值子树，而只有一个子树的话，很明显两条子树的路径是不平衡的，所以 parent 的两个黑色子树一定均为 NIL 节点。因此，uncle 如果为黑色，那么一定为 NIL 节点。</p>
+<p><strong>进行修正的条件：</strong></p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">AddFixedUp</span>(<span class="params">Node node</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (Node.IsRed(node.Parent)) &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>（注：以下是 parent 为 grand 的左子树的情况，当 parent 为 grand 的右子树时，执行镜像操作即可。）</p>
+<h3 id="Case-1：uncle-为红色"><a href="#Case-1：uncle-为红色" class="headerlink" title="Case 1：uncle 为红色"></a>Case 1：uncle 为红色</h3><p>将 uncle 和 parent 置黑，grand 置红，然后把 grand 当作插入节点，再进行一次修正。</p>
+<img src="/2020/06/20/red-black-tree-implementation-csharp/insert-case-1.jpg" alt="insert-case-1" style="zoom:80%;">
+
+<p>这样相当于将 grand 的黑色下沉到了 parent 和 uncle，所以各路径的黑色节点数量保持不变，不会影响树的平衡。</p>
+<p>但是由于 grand 置红了，可能导致 grand 与 grand’s parent 产生冲突，所以要把 grand 当作插入节点，再进行一次修正。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">parent.Color = uncle.Color = Node.BLACK;</span><br><span class="line">grand.Color = Node.RED;</span><br><span class="line">node = grand;</span><br><span class="line"><span class="keyword">continue</span>;</span><br></pre></td></tr></table></figure>
+
+<p>当 grand 刚好为 root 时，root 为红色是违反规则的，所以在全部修正结束后，需要将 root 置黑，以保证不违反红黑树的规则。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Root.Color = Node.BLACK;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Case-2：uncle-为黑色，且-node-为-parent-的右子树"><a href="#Case-2：uncle-为黑色，且-node-为-parent-的右子树" class="headerlink" title="Case 2：uncle 为黑色，且 node 为 parent 的右子树"></a>Case 2：uncle 为黑色，且 node 为 parent 的右子树</h3><p>将 parent 左旋，然后把 node 当作 parent，parent 当作 node。（图中的交换是交换引用的对象，不是交换值）</p>
+<img src="/2020/06/20/red-black-tree-implementation-csharp/insert-case-2.jpg" alt="insert-case-2" style="zoom:80%;">
+
+<p>这样的目的是将 Case 2 转换为 Case 3。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">LeftRotate(parent);</span><br><span class="line">Node tmp = parent;</span><br><span class="line">parent = node;</span><br><span class="line">node = tmp;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Case-3：uncle-为黑色，且-node-为-parent-的左子树"><a href="#Case-3：uncle-为黑色，且-node-为-parent-的左子树" class="headerlink" title="Case 3：uncle 为黑色，且 node 为 parent 的左子树"></a>Case 3：uncle 为黑色，且 node 为 parent 的左子树</h3><p>将 parent 置黑，grand 置红，然后将 grand 右旋。</p>
+<img src="/2020/06/20/red-black-tree-implementation-csharp/insert-case-3.jpg" alt="insert-case-3" style="zoom:80%;">
+
+<p>grand 右旋后，parent 就到了原先 grand 的位置，为了黑色节点的数量保持不变，便将 parent 置黑，grand 置红，这样左分支和右分支的黑色节点数量不变，不会影响树的平衡。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">parent.Color = Node.BLACK;</span><br><span class="line">grand.Color = Node.RED;</span><br><span class="line">RightRotate(grand);</span><br></pre></td></tr></table></figure>
+
+<h3 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h3><p>包括 parent 为 grand 左子树和右子树的情况。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">AddFixedUp</span>(<span class="params">Node node</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// node.Parent 为红色</span></span><br><span class="line">    <span class="keyword">while</span> (Node.IsRed(node.Parent)) &#123;</span><br><span class="line">        Node parent = node.Parent, grand = parent.Parent;</span><br><span class="line">        <span class="keyword">if</span> (parent == grand.Left) &#123;</span><br><span class="line">            <span class="comment">// parent 为 grand 左子树</span></span><br><span class="line">            Node uncle = grand.Right;</span><br><span class="line">            <span class="comment">// Case 1: uncle 为红色</span></span><br><span class="line">            <span class="keyword">if</span> (Node.IsRed(uncle)) &#123;</span><br><span class="line">                parent.Color = uncle.Color = Node.BLACK;</span><br><span class="line">                grand.Color = Node.RED;</span><br><span class="line">                node = grand;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Case 2: uncle 为黑色，且 node 为 parent 的右子树（转换为 Case 3）</span></span><br><span class="line">            <span class="keyword">if</span> (node == parent.Right) &#123;</span><br><span class="line">                LeftRotate(parent);</span><br><span class="line">                Node tmp = parent;</span><br><span class="line">                parent = node;</span><br><span class="line">                node = tmp;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Case 3: uncle 为黑色，且 node 为 parent 的左子树</span></span><br><span class="line">            parent.Color = Node.BLACK;</span><br><span class="line">            grand.Color = Node.RED;</span><br><span class="line">            RightRotate(grand);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// parent 为 grand 右子树</span></span><br><span class="line">            Node uncle = grand.Left;</span><br><span class="line">            <span class="comment">// Case 1: uncle 为红色</span></span><br><span class="line">            <span class="keyword">if</span> (Node.IsRed(uncle)) &#123;</span><br><span class="line">                uncle.Color = Node.BLACK;</span><br><span class="line">                parent.Color = Node.BLACK;</span><br><span class="line">                grand.Color = Node.RED;</span><br><span class="line">                node = grand;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Case 2: uncle 为黑色，且 node 为 parent 的左子树（转换为 Case 3）</span></span><br><span class="line">            <span class="keyword">if</span> (node == parent.Left) &#123;</span><br><span class="line">                RightRotate(parent);</span><br><span class="line">                Node tmp = parent;</span><br><span class="line">                parent = node;</span><br><span class="line">                node = tmp;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Case 3: uncle 为黑色，且 node 为 parent 的右子树</span></span><br><span class="line">            parent.Color = Node.BLACK;</span><br><span class="line">            grand.Color = Node.RED;</span><br><span class="line">            LeftRotate(grand);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 将 root 置黑</span></span><br><span class="line">    Root.Color = Node.BLACK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="删除修正"><a href="#删除修正" class="headerlink" title="删除修正"></a>删除修正</h2><p>设父节点为 parent，兄弟节点为 sibling，待删除的节点为 delete，替代节点为 node。</p>
+<p><strong>关于二叉搜索树的删除操作，根据 delete 的子树情况分为三种情况：</strong></p>
+<ol>
+<li>没有任何子树，那么 node 就是 NIL 节点，可以直接删除 delete；</li>
+<li>存在一个子树，那么 node 就是这个子树，删除 delete，用 node 替代 delete；</li>
+<li>存在两个子树，那么找到 delete 在中序遍历下的后继节点 successor，修改 delete 的值为 successor 的值，然后把 successor 当作 delete 再执行一次删除操作。</li>
+</ol>
+<p>由此可知，最终被删除的节点一定不同时存在左右子树。</p>
+<p>（注：之后的内容中的 delete 均指最终被删除的节点。）</p>
+<p><strong>接下来再看删除后的修正操作：</strong></p>
+<p>因为红黑树以黑色节点的数量来维持平衡，所以：</p>
+<ol>
+<li>当 delete 为红色时，删除后不会对红黑树的平衡产生影响。<ol>
+<li>因为红色节点的子树都是黑色节点，如果 delete 只存在一个子树的话，会导致子树的两条路径不平衡，所以此时 delete 的子树一定都是 NIL 节点。</li>
+</ol>
+</li>
+<li>当 delete 为黑色时，该节点所在路径的黑色节点数量会减少，因此会导致不平衡，需要进行修正。</li>
+</ol>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (Node.IsBlack(delete)) &#123;</span><br><span class="line">    RemoveFixedUp(node, delete.Parent);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在删除黑色 delete 后，根据 node 的颜色进行修正：</p>
+<ol>
+<li>node 为红色时，直接置黑就可以补充被删除的黑色；</li>
+<li>node 为黑色时，则需要分情况讨论。</li>
+</ol>
+<p><strong>另外，关于 sibling 的说明：</strong></p>
+<p>sibling 一定不为 NIL 节点，因为 delete 为黑色且不为 NIL 节点，所以 delete 及之后的路径至少包含两个黑色节点（包括 delete 自身和 NIL 叶子节点），如果 sibling 为 NIL 节点的话，那么 sibling 及之后的路径只有 sibling 一个黑色节点，这样的话 parent 的左右子树路径就是不平衡的，这在一颗符合规则的红黑树中是不存在的，所以 sibling 一定不为 NIL 节点。</p>
+<p><strong>进行修正的条件：</strong></p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">RemoveFixedUp</span>(<span class="params">Node node, Node parent</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">while</span> (Node.IsBlack(node) &amp;&amp; node != Root) &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>（注：以下是 node 为 parent 的左子树的情况，当 node 为 parent 的右子树时，执行镜像操作即可。）</p>
+<h3 id="Case-1：sibling-为红色"><a href="#Case-1：sibling-为红色" class="headerlink" title="Case 1：sibling 为红色"></a>Case 1：sibling 为红色</h3><p>因为 sibling 为红色，所以 parent 一定为黑色，所以将 parent 置红，sibling 置黑，再将 parent 左旋。</p>
+<img src="/2020/06/20/red-black-tree-implementation-csharp/delete-case-1.jpg" alt="delete-case-1" style="zoom:80%;">
+
+<p>这样相当于将右路的红色节点转到了左路，不会影响树的平衡。</p>
+<p>修正后，黑色的 sibling.left 成了新的 sibling，这样就将 Case 1 转换为了 Case 2 或 Case 3 或 Case 4。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">parent.Color = Node.RED;</span><br><span class="line">sibling.Color = Node.BLACK;</span><br><span class="line">LeftRotate(parent);</span><br><span class="line">sibling = parent.Right; <span class="comment">// new sibling</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="Case-2：sibling-为黑色，且-sibling-的左右子树均为黑色"><a href="#Case-2：sibling-为黑色，且-sibling-的左右子树均为黑色" class="headerlink" title="Case 2：sibling 为黑色，且 sibling 的左右子树均为黑色"></a>Case 2：sibling 为黑色，且 sibling 的左右子树均为黑色</h3><p>将 sibling 置红，然后把 parent 当作 node，再进行一次修正。（粉色表示任意颜色均可）</p>
+<img src="/2020/06/20/red-black-tree-implementation-csharp/delete-case-2.jpg" alt="delete-case-2" style="zoom:80%;">
+
+<p>因为删除节点后，左路少了一个黑，而右路的 sibling 及其左右子树均为黑色，所以可以直接将 sibling 置红，这样右路也少了一个黑，左右路就平衡了。</p>
+<p>与此同时，经过 parent 这个节点的所有路径就整体少了一个黑，所以接下来就需要处理 parent 路径和其他路径的平衡，也就是把 parent 当作 node，再进行一次修正。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sibling.Color = Node.RED;</span><br><span class="line">node = parent;</span><br><span class="line">parent = node.Parent;</span><br><span class="line"><span class="keyword">continue</span>;</span><br></pre></td></tr></table></figure>
+
+<p>sibling 被置红，但是 parent 的颜色是不确定的，如果 parent 是红色就会导致连续出现红色节点的情况，而且 node = parent 后进行的新一次修正，是不符合修正条件的，会直接结束，所以在修正循环结束后，需要手动将 node（也就是 parent）置黑。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (node != <span class="literal">null</span>) &#123;</span><br><span class="line">    node.Color = Node.BLACK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Case-3：sibling-为黑色，且-sibling-的左子树为红色，右子树为黑色"><a href="#Case-3：sibling-为黑色，且-sibling-的左子树为红色，右子树为黑色" class="headerlink" title="Case 3：sibling 为黑色，且 sibling 的左子树为红色，右子树为黑色"></a>Case 3：sibling 为黑色，且 sibling 的左子树为红色，右子树为黑色</h3><p>将 sibling 置红，sibling.left 置黑，然后将 sibling 右旋。</p>
+<img src="/2020/06/20/red-black-tree-implementation-csharp/delete-case-3.jpg" alt="delete-case-3" style="zoom:80%;">
+
+<p>这样相当于把 sibling 左路的红色转到 sibling 的右路，不会影响树的平衡。</p>
+<p>修正后，黑色的 sibling.left 就成了新的 sibling，而新的 sibling.right 为红色，这样就将 Case 3 转换为了 Case 4。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sibling.Left.Color = Node.BLACK;</span><br><span class="line">sibling.Color = Node.RED;</span><br><span class="line">RightRotate(sibling);</span><br><span class="line">sibling = parent.Right;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Case-4：sibling-为黑色，且-sibling-的左子树为任意色，右子树为红色"><a href="#Case-4：sibling-为黑色，且-sibling-的左子树为任意色，右子树为红色" class="headerlink" title="Case 4：sibling 为黑色，且 sibling 的左子树为任意色，右子树为红色"></a>Case 4：sibling 为黑色，且 sibling 的左子树为任意色，右子树为红色</h3><p>将 sibling 置为 parent 的颜色，然后将 parent 和 sibling.right 置黑，再将 parent 左旋。</p>
+<img src="/2020/06/20/red-black-tree-implementation-csharp/delete-case-4.jpg" alt="delete-case-4.jpg" style="zoom:80%;">
+
+<p>左旋后，sibling 就到了原先 parent 的位置，为了黑色节点数量保持不变，所以将 sibling 置为 parent 的颜色。但 sibling 换位并变色会导致右路少了一个黑色节点，所以将 sibling.right 置黑以保持平衡。最后将 parent 置黑，这样左路因删除节点而缺少的一个黑色节点，由 parent 进行了补充，整棵红黑树就平衡了。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sibling.Color = parent.Color;</span><br><span class="line">parent.Color = Node.BLACK;</span><br><span class="line">sibling.Right.Color = Node.BLACK;</span><br><span class="line">LeftRotate(parent);</span><br></pre></td></tr></table></figure>
+
+<h3 id="完整代码-1"><a href="#完整代码-1" class="headerlink" title="完整代码"></a>完整代码</h3><p>包括 node 为 parent 左子树和右子树的情况。</p>
+<figure class="highlight c#"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title">RemoveFixedUp</span>(<span class="params">Node node, Node parent</span>)</span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// node 为黑色且不为根节点</span></span><br><span class="line">    <span class="keyword">while</span> (Node.IsBlack(node) &amp;&amp; node != Root) &#123;</span><br><span class="line">        <span class="keyword">if</span> (node == parent.Left) &#123;</span><br><span class="line">            <span class="comment">// node 为 parent 左子树的情况</span></span><br><span class="line">            Node sibling = parent.Right;</span><br><span class="line">            <span class="comment">// Case 1: sibling 为红色（转换为 Case 2, 3, 4）</span></span><br><span class="line">            <span class="keyword">if</span> (Node.IsRed(sibling)) &#123;</span><br><span class="line">                parent.Color = Node.RED;</span><br><span class="line">                sibling.Color = Node.BLACK;</span><br><span class="line">                LeftRotate(parent);</span><br><span class="line">                sibling = parent.Right; <span class="comment">// new sibling</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Case 2: sibling 为黑色，且 sibling 的左右子树都为黑色</span></span><br><span class="line">            <span class="keyword">if</span> (Node.IsBlack(sibling.Left) &amp;&amp; Node.IsBlack(sibling.Right)) &#123;</span><br><span class="line">                sibling.Color = Node.RED;</span><br><span class="line">                node = parent;</span><br><span class="line">                parent = node.Parent;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Case 3: sibling 为黑色，且 sibling 的左子树为红色，右子树为黑色（转换为 Case 4）</span></span><br><span class="line">            <span class="keyword">if</span> (Node.IsRed(sibling.Left)) &#123;</span><br><span class="line">                sibling.Left.Color = Node.BLACK;</span><br><span class="line">                sibling.Color = Node.RED;</span><br><span class="line">                RightRotate(sibling);</span><br><span class="line">                sibling = parent.Right;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Case 4: sibling 为黑色，且 sibling 的左子树为任意色，右子树为红色</span></span><br><span class="line">            sibling.Color = parent.Color;</span><br><span class="line">            parent.Color = Node.BLACK;</span><br><span class="line">            sibling.Right.Color = Node.BLACK;</span><br><span class="line">            LeftRotate(parent);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// node 为 parent 右子树的情况</span></span><br><span class="line">            Node sibling = parent.Left;</span><br><span class="line">            <span class="comment">// Case 1: sibling 为红色（转换为 Case 2, 3, 4）</span></span><br><span class="line">            <span class="keyword">if</span> (Node.IsRed(sibling)) &#123;</span><br><span class="line">                parent.Color = Node.RED;</span><br><span class="line">                sibling.Color = Node.BLACK;</span><br><span class="line">                RightRotate(parent);</span><br><span class="line">                sibling = parent.Left; <span class="comment">// new sibling</span></span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Case 2: sibling 为黑色，且 sibling 的左右子树都为黑色</span></span><br><span class="line">            <span class="keyword">if</span> (Node.IsBlack(sibling.Left) &amp;&amp; Node.IsBlack(sibling.Right)) &#123;</span><br><span class="line">                sibling.Color = Node.RED;</span><br><span class="line">                node = parent;</span><br><span class="line">                parent = node.Parent;</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Case 3: sibling 为黑色，且 sibling 的左子树为黑色，右子树为红色（转换为 Case 4）</span></span><br><span class="line">            <span class="keyword">if</span> (Node.IsRed(sibling.Right)) &#123;</span><br><span class="line">                sibling.Right.Color = Node.BLACK;</span><br><span class="line">                sibling.Color = Node.RED;</span><br><span class="line">                LeftRotate(sibling);</span><br><span class="line">                sibling = parent.Left;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// Case 4: sibling 为黑色，且 sibling 的左子树为红色，右子树为任意色</span></span><br><span class="line">            sibling.Color = parent.Color;</span><br><span class="line">            parent.Color = Node.BLACK;</span><br><span class="line">            sibling.Left.Color = Node.BLACK;</span><br><span class="line">            RightRotate(parent);</span><br><span class="line">            <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (node != <span class="literal">null</span>) &#123;</span><br><span class="line">        node.Color = Node.BLACK;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CSharp/" rel="tag"># CSharp</a>
+              <a href="/tags/%E6%A0%91/" rel="tag"># 树</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag"># 数据结构</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2020/06/15/cache-algorithm-lru-and-lfu-implementation-csharp/" rel="prev" title="缓存算法 LRU 与 LFU">
+      <i class="fa fa-chevron-left"></i> 缓存算法 LRU 与 LFU
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+  </div>
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let activeClass = CONFIG.comments.activeClass;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#红黑树的规则"><span class="nav-number">1.</span> <span class="nav-text">红黑树的规则</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#插入修正"><span class="nav-number">2.</span> <span class="nav-text">插入修正</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Case-1：uncle-为红色"><span class="nav-number">2.1.</span> <span class="nav-text">Case 1：uncle 为红色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Case-2：uncle-为黑色，且-node-为-parent-的右子树"><span class="nav-number">2.2.</span> <span class="nav-text">Case 2：uncle 为黑色，且 node 为 parent 的右子树</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Case-3：uncle-为黑色，且-node-为-parent-的左子树"><span class="nav-number">2.3.</span> <span class="nav-text">Case 3：uncle 为黑色，且 node 为 parent 的左子树</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#完整代码"><span class="nav-number">2.4.</span> <span class="nav-text">完整代码</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#删除修正"><span class="nav-number">3.</span> <span class="nav-text">删除修正</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Case-1：sibling-为红色"><span class="nav-number">3.1.</span> <span class="nav-text">Case 1：sibling 为红色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Case-2：sibling-为黑色，且-sibling-的左右子树均为黑色"><span class="nav-number">3.2.</span> <span class="nav-text">Case 2：sibling 为黑色，且 sibling 的左右子树均为黑色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Case-3：sibling-为黑色，且-sibling-的左子树为红色，右子树为黑色"><span class="nav-number">3.3.</span> <span class="nav-text">Case 3：sibling 为黑色，且 sibling 的左子树为红色，右子树为黑色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Case-4：sibling-为黑色，且-sibling-的左子树为任意色，右子树为红色"><span class="nav-number">3.4.</span> <span class="nav-text">Case 4：sibling 为黑色，且 sibling 的左子树为任意色，右子树为红色</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#完整代码-1"><span class="nav-number">3.5.</span> <span class="nav-text">完整代码</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="daixxTech"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">daixxTech</p>
+  <div class="site-description" itemprop="description">谦虚为人，谦逊待人。</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/daixxTech" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;daixxTech" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">daixxTech</span>
+</div>
+
+<!--
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v4.2.0
+  </div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.7.0
+  </div>
+-->
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el: '#valine-comments',
+      verify: false,
+      notify: false,
+      appId: 'rp0gVwks1NRNp7oxE6wzKCgH-gzGzoHsz',
+      appKey: '6P90yV0hLER2qU2SwSNFVPVm',
+      placeholder: "Just go go",
+      avatar: 'mm',
+      meta: guest,
+      pageSize: '10' || 10,
+      visitor: false,
+      lang: '' || 'zh-cn',
+      path: location.pathname,
+      recordIP: false,
+      serverURLs: ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
