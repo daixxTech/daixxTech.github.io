@@ -46,17 +46,17 @@
   };
 </script>
 
-  <meta name="description" content="本文主要记录 C# 中的一些命名规范问题，文章内容会根据个人的学习进度进行更新。 个人认为好的编程习惯是非常重要的，整洁规范的代码可以显著地提高可读性，一方面方便开发人员对代码进行维护，另一方面阅读这样的代码也可以使人身心愉悦。 PS：该命名规范有一定程度的个人主观因素，仅供参考。">
+  <meta name="description" content="本文主要记录 C# 中的一些命名规范问题，文章内容会根据个人的学习进度进行更新。 个人认为好的编程习惯是非常重要的，整洁规范的代码可以显著地提高可读性，既方便开发者的维护，也可以使读者身心愉悦。 PS：该命名规范有一定程度的个人主观因素，仅供参考。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="C# 中的命名规范">
 <meta property="og:url" content="https://daixxtech.github.io/2020/01/08/csharp-nameing-convention/index.html">
 <meta property="og:site_name" content="daixxTech&#39;s blog">
-<meta property="og:description" content="本文主要记录 C# 中的一些命名规范问题，文章内容会根据个人的学习进度进行更新。 个人认为好的编程习惯是非常重要的，整洁规范的代码可以显著地提高可读性，一方面方便开发人员对代码进行维护，另一方面阅读这样的代码也可以使人身心愉悦。 PS：该命名规范有一定程度的个人主观因素，仅供参考。">
+<meta property="og:description" content="本文主要记录 C# 中的一些命名规范问题，文章内容会根据个人的学习进度进行更新。 个人认为好的编程习惯是非常重要的，整洁规范的代码可以显著地提高可读性，既方便开发者的维护，也可以使读者身心愉悦。 PS：该命名规范有一定程度的个人主观因素，仅供参考。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2020-01-08T09:31:40.000Z">
-<meta property="article:modified_time" content="2020-05-24T13:42:23.442Z">
+<meta property="article:modified_time" content="2020-06-29T15:01:45.534Z">
 <meta property="article:author" content="daixxTech">
-<meta property="article:tag" content="CSharp">
+<meta property="article:tag" content="C#">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="https://daixxtech.github.io/2020/01/08/csharp-nameing-convention/">
@@ -211,7 +211,7 @@
                   <i class="fa fa-calendar-check-o"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-05-24 21:42:23" itemprop="dateModified" datetime="2020-05-24T21:42:23+08:00">2020-05-24</time>
+                <time title="修改时间：2020-06-29 23:01:45" itemprop="dateModified" datetime="2020-06-29T23:01:45+08:00">2020-06-29</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -219,8 +219,8 @@
               </span>
               <span class="post-meta-item-text">分类于</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E7%BC%96%E7%A8%8B%E8%A7%84%E8%8C%83/" itemprop="url" rel="index">
-                    <span itemprop="name">编程规范</span>
+                  <a href="/categories/C/" itemprop="url" rel="index">
+                    <span itemprop="name">C#</span>
                   </a>
                 </span>
             </span>
@@ -251,22 +251,24 @@
 
       
         <p>本文主要记录 C# 中的一些命名规范问题，文章内容会根据个人的学习进度进行更新。</p>
-<p>个人认为好的编程习惯是非常重要的，整洁规范的代码可以显著地提高可读性，一方面方便开发人员对代码进行维护，另一方面阅读这样的代码也可以使人身心愉悦。</p>
+<p>个人认为好的编程习惯是非常重要的，整洁规范的代码可以显著地提高可读性，既方便开发者的维护，也可以使读者身心愉悦。</p>
 <p><strong>PS：该命名规范有一定程度的个人主观因素，仅供参考。</strong></p>
 <a id="more"></a>
 
+<h2 id="接口-interface"><a href="#接口-interface" class="headerlink" title="接口 interface"></a>接口 interface</h2><p>使用帕斯卡命名规则。</p>
+<p>以大写字母 I 开头。</p>
 <h2 id="类-class"><a href="#类-class" class="headerlink" title="类 class"></a>类 class</h2><p>使用帕斯卡命名规则。</p>
 <p>类名应该是能够反映类功能的名词，或名词短语。</p>
-<h3 id="字段-field"><a href="#字段-field" class="headerlink" title="字段 field"></a>字段 field</h3><p>字段一般是私有的，用 private 修饰。</p>
+<h2 id="字段-field"><a href="#字段-field" class="headerlink" title="字段 field"></a>字段 field</h2><p>字段一般是私有的，用 private 修饰。</p>
 <p>bool 类型的字段一般根据含义以 is / can / has 等作为前缀。</p>
 <p>bool 类型的方法同理。</p>
-<h4 id="私有字段-private-field"><a href="#私有字段-private-field" class="headerlink" title="私有字段 private field"></a>私有字段 private field</h4><p>以 “_” 作为前缀，使用驼峰命名规则。</p>
-<h4 id="公共字段-public-field"><a href="#公共字段-public-field" class="headerlink" title="公共字段 public field"></a>公共字段 public field</h4><p>使用帕斯卡命名规则。</p>
-<h3 id="属性-property"><a href="#属性-property" class="headerlink" title="属性 property"></a>属性 property</h3><p>使用帕斯卡命名规则。</p>
+<h3 id="私有字段-private-field"><a href="#私有字段-private-field" class="headerlink" title="私有字段 private field"></a>私有字段 private field</h3><p>以 “_” 作为前缀，使用驼峰命名规则。</p>
+<h3 id="公共字段-public-field"><a href="#公共字段-public-field" class="headerlink" title="公共字段 public field"></a>公共字段 public field</h3><p>使用帕斯卡命名规则。</p>
+<h2 id="属性-property"><a href="#属性-property" class="headerlink" title="属性 property"></a>属性 property</h2><p>使用帕斯卡命名规则。</p>
 <p>属性一般是公有的，用 public 修饰。</p>
-<h3 id="方法-method"><a href="#方法-method" class="headerlink" title="方法 method"></a>方法 method</h3><p>使用帕斯卡命名规则。</p>
+<h2 id="方法-method"><a href="#方法-method" class="headerlink" title="方法 method"></a>方法 method</h2><p>使用帕斯卡命名规则。</p>
 <p>方法名应该是动词，或者动宾短语。</p>
-<h4 id="动词的选择"><a href="#动词的选择" class="headerlink" title="动词的选择"></a>动词的选择</h4><table>
+<h3 id="动词的选择"><a href="#动词的选择" class="headerlink" title="动词的选择"></a>动词的选择</h3><table>
 <thead>
 <tr>
 <th>动词类别</th>
@@ -274,75 +276,75 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>添加/插入/创建/初始化/加载</td>
-<td>add、append、insert、create、initialize、load</td>
+<td>添加 / 插入 / 创建 / 初始化 / 加载</td>
+<td>add, append, insert, create, initialize, load</td>
 </tr>
 <tr>
-<td>删除/销毁</td>
-<td>delete、remove、destroy、drop</td>
+<td>删除 / 销毁</td>
+<td>delete, remove, destroy, drop</td>
 </tr>
 <tr>
-<td>打开/开始/启动</td>
-<td>open、start</td>
+<td>打开 / 开始 / 启动</td>
+<td>open, start</td>
 </tr>
 <tr>
-<td>关闭/停止</td>
-<td>close、stop</td>
+<td>关闭 / 停止</td>
+<td>close, stop</td>
 </tr>
 <tr>
-<td>获取/读取/查找/查询</td>
-<td>get、fetch、acquire、read、search、find、query</td>
+<td>获取 / 读取 / 查找 / 查询</td>
+<td>get, fetch, acquire, read, search, find, query</td>
 </tr>
 <tr>
-<td>设置/重置/放入/写入/释放/刷新</td>
-<td>set、reset、put、write、release、refresh</td>
+<td>设置 / 重置 / 放入 / 写入 / 释放 / 刷新</td>
+<td>set, reset, put, write, release, refresh</td>
 </tr>
 <tr>
-<td>发送/推送</td>
-<td>send、push</td>
+<td>发送 / 推送</td>
+<td>send, push</td>
 </tr>
 <tr>
-<td>接收/拉取</td>
-<td>receive、pull</td>
+<td>接收 / 拉取</td>
+<td>receive, pull</td>
 </tr>
 <tr>
-<td>提交/撤销/取消</td>
-<td>submit、cancel</td>
+<td>提交 / 撤销 / 取消</td>
+<td>submit, cancel</td>
 </tr>
 <tr>
-<td>收集/采集/选取/选择</td>
-<td>collect、pick、select</td>
+<td>收集 / 采集 / 选取 / 选择</td>
+<td>collect, pick, select</td>
 </tr>
 <tr>
-<td>提取/解析</td>
-<td>sub、extract、parse</td>
+<td>提取 / 解析</td>
+<td>sub, extract, parse</td>
 </tr>
 <tr>
-<td>编码/解码</td>
-<td>encode、decode</td>
+<td>编码 / 解码</td>
+<td>encode, decode</td>
 </tr>
 <tr>
-<td>填充/打包/压缩</td>
-<td>fill、pack、compress</td>
+<td>填充 / 打包 / 压缩</td>
+<td>fill, pack, compress</td>
 </tr>
 <tr>
-<td>清空/拆包/解压</td>
-<td>flush、clear、unpack、decompress</td>
+<td>清空 / 拆包 / 解压</td>
+<td>flush, clear, unpack, decompress</td>
 </tr>
 <tr>
-<td>增加/减少</td>
-<td>increase、decrease、reduce</td>
+<td>增加 / 减少</td>
+<td>increase, decrease, reduce</td>
 </tr>
 <tr>
-<td>分隔/拼接</td>
-<td>split、join、concat</td>
+<td>分隔 / 拼接</td>
+<td>split, join, concat</td>
 </tr>
 <tr>
-<td>过滤/校验/检测</td>
-<td>filter、valid、check</td>
+<td>过滤 / 校验 / 检测</td>
+<td>filter, valid, check</td>
 </tr>
 </tbody></table>
-<h4 id="名词的选择"><a href="#名词的选择" class="headerlink" title="名词的选择"></a>名词的选择</h4><table>
+<h3 id="名词的选择"><a href="#名词的选择" class="headerlink" title="名词的选择"></a>名词的选择</h3><table>
 <thead>
 <tr>
 <th>名词类别</th>
@@ -350,52 +352,50 @@
 </tr>
 </thead>
 <tbody><tr>
-<td>容量/大小/长度</td>
-<td>capacity、size、length</td>
+<td>容量 / 大小 / 长度</td>
+<td>capacity, size, length</td>
 </tr>
 <tr>
-<td>实例/上下文</td>
-<td>instance、context</td>
+<td>实例 / 上下文</td>
+<td>instance, context</td>
 </tr>
 <tr>
 <td>配置</td>
-<td>config、settings</td>
+<td>config, settings</td>
 </tr>
 <tr>
-<td>头部/前面/前一个/第一个</td>
-<td>header、front、previous、first</td>
+<td>头部 / 前面 / 前一个 / 第一个</td>
+<td>header, front, previous, first</td>
 </tr>
 <tr>
-<td>尾部/后面/后一个/最后一个</td>
-<td>tail、back、next、last</td>
+<td>尾部 / 后面 / 后一个 / 最后一个</td>
+<td>tail, back, next, last</td>
 </tr>
 <tr>
-<td>区间/区域/某一部分/范围/规模</td>
-<td>range、interval、region、area、section、scope、scale</td>
+<td>区间 / 区域 / 某一部分 / 范围 / 规模</td>
+<td>range, interval, region, area, section, scope, scale</td>
 </tr>
 <tr>
-<td>缓存/缓冲/会话</td>
-<td>cache、buffer、session</td>
+<td>缓存 / 缓冲 / 会话</td>
+<td>cache, buffer, session</td>
 </tr>
 <tr>
-<td>本地/局部/全局</td>
-<td>local、global</td>
+<td>本地 / 局部 / 全局</td>
+<td>local, global</td>
 </tr>
 <tr>
-<td>成员/元素</td>
-<td>member、element</td>
+<td>成员 / 元素</td>
+<td>member, element</td>
 </tr>
 <tr>
-<td>菜单/列表</td>
-<td>menu、list</td>
+<td>菜单 / 列表</td>
+<td>menu, list</td>
 </tr>
 <tr>
-<td>源/目标</td>
-<td>source、destination、target</td>
+<td>源 / 目标</td>
+<td>source, destination, target</td>
 </tr>
 </tbody></table>
-<h2 id="接口-interface"><a href="#接口-interface" class="headerlink" title="接口 interface"></a>接口 interface</h2><p>使用帕斯卡命名规则。</p>
-<p>以大写字母 I 开头。</p>
 
     </div>
 
@@ -405,7 +405,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/CSharp/" rel="tag"># CSharp</a>
+              <a href="/tags/C/" rel="tag"># C#</a>
           </div>
 
         
@@ -481,7 +481,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#类-class"><span class="nav-number">1.</span> <span class="nav-text">类 class</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#字段-field"><span class="nav-number">1.1.</span> <span class="nav-text">字段 field</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#私有字段-private-field"><span class="nav-number">1.1.1.</span> <span class="nav-text">私有字段 private field</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#公共字段-public-field"><span class="nav-number">1.1.2.</span> <span class="nav-text">公共字段 public field</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#属性-property"><span class="nav-number">1.2.</span> <span class="nav-text">属性 property</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#方法-method"><span class="nav-number">1.3.</span> <span class="nav-text">方法 method</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#动词的选择"><span class="nav-number">1.3.1.</span> <span class="nav-text">动词的选择</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#名词的选择"><span class="nav-number">1.3.2.</span> <span class="nav-text">名词的选择</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接口-interface"><span class="nav-number">2.</span> <span class="nav-text">接口 interface</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#接口-interface"><span class="nav-number">1.</span> <span class="nav-text">接口 interface</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#类-class"><span class="nav-number">2.</span> <span class="nav-text">类 class</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#字段-field"><span class="nav-number">3.</span> <span class="nav-text">字段 field</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#私有字段-private-field"><span class="nav-number">3.1.</span> <span class="nav-text">私有字段 private field</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#公共字段-public-field"><span class="nav-number">3.2.</span> <span class="nav-text">公共字段 public field</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#属性-property"><span class="nav-number">4.</span> <span class="nav-text">属性 property</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#方法-method"><span class="nav-number">5.</span> <span class="nav-text">方法 method</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#动词的选择"><span class="nav-number">5.1.</span> <span class="nav-text">动词的选择</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#名词的选择"><span class="nav-number">5.2.</span> <span class="nav-text">名词的选择</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -497,7 +497,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">10</span>
+          <span class="site-state-item-count">11</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -510,7 +510,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-count">17</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
